@@ -1,0 +1,10 @@
+{
+  "name"    : "elm-electron-kapitalismus-time-tracking",
+  "version" : "0.1.0",
+  "main"    : "electron-start.js",
+  "keywords": [
+    "kapitalismus"
+  ],
+  "author": "Pedro Visintin",
+  "license": "MIT"
+}

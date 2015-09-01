@@ -1,0 +1,9 @@
+{
+    "name": "Time tracking Museum des Kapitalismus in Elm",
+    "repository": "https://github.com/peterpunk/elm-kapitalismus-time-tracking",
+    "env": {
+        "BUILDPACK_URL": "https://github.com/srid/heroku-buildpack-elm.git",
+        "ELM_COMPILE": "elm make TimeTracking.elm",
+        "ELM_STATIC_DIR": "."
+    }
+}
