@@ -53,15 +53,38 @@ update action log =
 view : Address Action -> Model -> Html
 view address model =
   div [ class "wrapper" ]
+  [
+    div [ class "main_item"]
     [
-    div [ class "main_item"]
-      [
       p []
-        [ text "Bitte halte deine Chipkarte auf das Lesegerät um deine persönliche Auswertung zu erhalten" ]
-      ],
+        [ text "Wähle eine Sprache" ],
+      a [ class "big_button", href "#"]
+        [
+          p []
+          [ text "Deutsch" ]
+        ]
+    ],
     div [ class "main_item"]
-      [
+    [
       p []
-        [ text "Please place your chipcard on the reading device to receive your personal evaluation" ]
-      ]
+        [ text "Select your language" ],
+      a [ class "big_button", href "#"]
+        [
+          p []
+          [ text "English" ]
+        ]
     ]
+  ]
+  -- div [ class "wrapper" ]
+  -- [
+  --   div [ class "main_item"]
+  --   [
+  --     p []
+  --       [ text "Wähle eine Sprache" ]
+  --   ],
+  --   div [ class "main_item"]
+  --   [
+  --     p []
+  --       [ text "Select your language" ]
+  --   ]
+  -- ]
