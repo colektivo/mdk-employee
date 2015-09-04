@@ -3,6 +3,7 @@ module TimeTracking where
 import Color exposing (..)
 import Touch exposing (..)
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import String
 import Window
@@ -22,6 +23,8 @@ main =
       view = view,
       update = update}
 
+-- MODEL
+
 type alias Model =
   { events: List String }
 
@@ -29,22 +32,10 @@ initialModel : Model
 initialModel =
   { events = [] }
 
-view : Address Action -> Model -> Html
-view address model =
-  div []
-    [ button [ onClick address (Mark "X") ]
-        [ text "Mark" ],
-      button [ onClick address Reset ]
-        [ text "Reset" ],
-      h2 []
-        [ text (model.events |> List.length |> toString), text " Events" ],
-      div []
-        (List.map (\t -> text t) model.events)]
+-- UPDATE
 
 type Action = Mark String
             | Reset
-
-
 
 addName : String -> a -> { a | name:String }
 addName name record = { record | name = name }
@@ -56,3 +47,21 @@ update action log =
       { log | events <- log.events ++ [date] }
     Reset ->
       { log | events <- [] }
+
+-- VIEW
+
+view : Address Action -> Model -> Html
+view address model =
+  div [ class "wrapper" ]
+    [
+    div [ class "main_item"]
+      [
+      p []
+        [ text "Bitte halte deine Chipkarte auf das Lesegerät um deine persönliche Auswertung zu erhalten" ]
+      ],
+    div [ class "main_item"]
+      [
+      p []
+        [ text "Please place your chipcard on the reading device to receive your personal evaluation" ]
+      ]
+    ]
