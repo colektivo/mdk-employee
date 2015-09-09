@@ -52,39 +52,42 @@ update action log =
 
 view : Address Action -> Model -> Html
 view address model =
+  -- SECOND SCREEN
   div [ class "wrapper" ]
   [
     div [ class "main_item"]
     [
       p []
-        [ text "Wähle eine Sprache" ],
+      [ text "Wähle eine Sprache" ],
       a [ class "big_button", href "#"]
-        [
-          p []
-          [ text "Deutsch" ]
-        ]
+      [
+        p []
+        [ text "Deutsch" ]
+      ]
     ],
     div [ class "main_item"]
     [
       p []
-        [ text "Select your language" ],
+      [ text "Select your language" ],
       a [ class "big_button", href "#"]
-        [
-          p []
-          [ text "English" ]
-        ]
+      [
+        p []
+        [ text "English" ]
+      ]
     ]
   ]
+
+  -- FIRST SCREEN
   -- div [ class "wrapper" ]
   -- [
   --   div [ class "main_item"]
   --   [
   --     p []
-  --       [ text "Wähle eine Sprache" ]
+  --     [ text "Bitte halte deine Chipkarte auf das Lesegerät um deine persönliche Auswertung zu erhalten" ]
   --   ],
   --   div [ class "main_item"]
   --   [
   --     p []
-  --       [ text "Select your language" ]
+  --     [ text "Please place your chipcard on the reading device to receive your personal evaluation" ]
   --   ]
   -- ]

@@ -39,11 +39,23 @@ html {
   margin: 100px 200px;
   padding: 50px;
   width: 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.main_item p, .main_item a {
+  text-align: center;
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-basis: 98%;
 }
 
 .main_item p {
   font-family: 'Graphik-Semibold';
-  font-size: 60px;
+  font-size: 50px;
   line-height: 1.45;
 }
 
@@ -52,6 +64,7 @@ html {
   align-items: center;
   justify-content: center;
   border: 10px solid black;
+  border-radius: 12px;
   height: 50vh;
   margin-top: 30px;
   text-transform: uppercase;
