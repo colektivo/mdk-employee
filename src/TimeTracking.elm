@@ -1,93 +1,122 @@
 module TimeTracking where
 
-import Color exposing (..)
-import Touch exposing (..)
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Graphics.Element exposing (show)
+import Task             exposing (Task, andThen)
 import String
-import Window
-import Time exposing (..)
-import Signal exposing (..)
-import StartApp.Simple as StartApp
+import Time
+import SocketIO
+import Html             exposing (..)
+import Html.Attributes  exposing (..)
+import Html.Events      exposing (onClick)
+import Signal           exposing (..)
+
+
+import Graphics.Element exposing (show)
+import Task exposing (Task, andThen)
+import SocketIO
+
+socket : Task x SocketIO.Socket
+socket = SocketIO.io "http://localhost:8001" SocketIO.defaultOptions
+
+port initial : Task x ()
+port initial = socket `andThen` SocketIO.emit "" "Hello I am a browser using websockets"
+
+
+port responses : Task x ()
+port responses = socket `andThen` SocketIO.on "completed" received.address
+
+-- Model
+
+type alias Model =
+  { events: List String,
+    page: Int }
+
+initialModel : Model
+initialModel =
+  {
+    events = [],
+    page = 0
+    }
+
+-- actions
+
+type Action = Next
+            | Previous
+            | Reset
+            | Start String
+
+-- update
+
+update : Action -> Model -> Model
+update action log =
+  case action of
+    Previous ->
+      { log | page <- log.page - 1 }
+    Next ->
+      { log | page <- log.page + 1 }
+    Start data ->
+      { log | events <- log.events ++ [data] }
+    Reset ->
+      { log | events <- [] , page <- 0 }
+
+-- SIGNALS
 
 actions: Mailbox Action
 actions =
   mailbox Reset
 
+received : Signal.Mailbox String
+received =
+  Signal.mailbox ""
 
-main : Signal Html
-main =
-  StartApp.start
-    { model = initialModel,
-      view = view,
-      update = update}
+cardinput : Signal Action
+cardinput =
+  Signal.map Start received.signal
 
--- MODEL
+allinputs : Signal Action
+allinputs = Signal.merge actions.signal cardinput
 
-type alias Model =
-  { events: List String }
+model: Signal Model
+model =
+  foldp update initialModel allinputs
 
-initialModel : Model
-initialModel =
-  { events = [] }
 
--- UPDATE
+-- view
 
-type Action = Mark String
-            | Reset
+previous: Address Action -> Model -> Html
+previous address model =
+  li [ onClick address Previous ] [ text "Prev" ]
 
-addName : String -> a -> { a | name:String }
-addName name record = { record | name = name }
+next: Address Action -> Model -> Html
+next address model =
+  li [ onClick address Next ] [ text "Next" ]
 
-update : Action -> Model -> Model
-update action log =
-  case action of
-    Mark date ->
-      { log | events <- log.events ++ [date] }
-    Reset ->
-      { log | events <- [] }
-
--- VIEW
+navigation: Address Action -> Model -> Html
+navigation address model =
+  let
+    links =
+      if model.page > 0 then [previous address model] else []
+    alllinks =
+      if model.page < 5 then links ++ [next address model] else links
+  in
+    ul []
+      alllinks
 
 view : Address Action -> Model -> Html
 view address model =
-  -- SECOND SCREEN
-  div [ class "wrapper" ]
-  [
-    div [ class "main_item"]
-    [
-      p []
-      [ text "Wähle eine Sprache" ],
-      a [ class "big_button", href "#"]
-      [
-        p []
-        [ text "Deutsch" ]
+  div []
+    [ navigation address model,
+      h1 [ onClick address Reset ]
+        [ text "Reset" ],
+      div []
+        (List.map (\t -> text t) model.events),
+      div []
+        [ text (toString model.page) ]
       ]
-    ],
-    div [ class "main_item"]
-    [
-      p []
-      [ text "Select your language" ],
-      a [ class "big_button", href "#"]
-      [
-        p []
-        [ text "English" ]
-      ]
-    ]
-  ]
 
-  -- FIRST SCREEN
-  -- div [ class "wrapper" ]
-  -- [
-  --   div [ class "main_item"]
-  --   [
-  --     p []
-  --     [ text "Bitte halte deine Chipkarte auf das Lesegerät um deine persönliche Auswertung zu erhalten" ]
-  --   ],
-  --   div [ class "main_item"]
-  --   [
-  --     p []
-  --     [ text "Please place your chipcard on the reading device to receive your personal evaluation" ]
-  --   ]
-  -- ]
+
+-- main
+
+main : Signal Html
+main =
+  map (view actions.address) model
