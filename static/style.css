@@ -34,6 +34,13 @@ html {
   width: 100vw;
 }
 
+.wrapper.-second {
+  background-image: url('Logo_Mdk_BW.png');
+  background-position: center 5%;
+  background-repeat: no-repeat;
+  background-size: 5%;
+}
+
 .main_item {
   background: white;
   margin: 100px 200px;
@@ -55,15 +62,17 @@ html {
 
 .main_item p {
   font-family: 'Graphik-Semibold';
-  font-size: 50px;
+  font-size: 40px;
   line-height: 1.45;
+  color: #BBA542;
+  padding-top: 20px;
 }
 
 .big_button {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 10px solid black;
+  border: 10px solid #3E5D9C;
   border-radius: 12px;
   height: 50vh;
   margin-top: 30px;
@@ -72,9 +81,15 @@ html {
 
 .big_button:hover {
   background: black;
-  color: white;
+  border: 10px solid black;
 }
 
 .big_button p {
-  font-size: 50px;
+  font-size: 30px;
+  letter-spacing: 4px;
+  color: #3E5D9C;
+}
+
+.big_button:hover p {
+  color: white;
 }
