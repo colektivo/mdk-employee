@@ -25,7 +25,7 @@ html {
 
 .wrapper {
   background-color: #EDEDED;
-  background-image: url('Logo_Mdk_BW.png');
+  background-image: url('images/Logo_Mdk_BW.png');
   background-position: center center;
   background-repeat: no-repeat;
   background-size: 10%;
@@ -35,9 +35,7 @@ html {
 }
 
 .wrapper.-second {
-  background-image: url('Logo_Mdk_BW.png');
   background-position: center 5%;
-  background-repeat: no-repeat;
   background-size: 5%;
 }
 
@@ -45,12 +43,16 @@ html {
   background: white;
   margin: 100px 200px;
   padding: 50px;
-  width: 40%;
+  width: 90%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
   align-items: stretch;
+}
+
+.main_item.-in_two {
+  width: 40%;
 }
 
 .main_item p, .main_item a {
@@ -92,4 +94,31 @@ html {
 
 .big_button:hover p {
   color: white;
+}
+
+.with_icon {
+  height: 100px;
+  width: 100px;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.with_icon.-needs {
+  background-image: url('images/Needs.png');
+}
+
+.with_icon.-mechanisms {
+  background-image: url('images/Mechanisms.png');
+}
+
+.with_icon.-competition {
+  background-image: url('images/Competition.png');
+}
+
+.with_icon.-colonialism {
+  background-image: url('images/Colonialism.png');
+}
+
+.with_icon.-beyond {
+  background-image: url('images/Beyond.png');
 }
