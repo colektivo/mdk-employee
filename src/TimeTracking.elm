@@ -173,27 +173,28 @@ content: Address Action -> Model -> Html
 content address model =
   case model.page of
     0 ->
-      div [ class "wrapper" ]
+      div [ class "back -main" ]
       [
         div [ class "main_item -in_two"]
         [
-          p []
+          p [ class "content" ]
           [ phrase "place_chip" "de" ]
         ]
         ,
         div [ class "main_item -in_two"]
         [
-          p []
+          p [ class "content" ]
           [ phrase "place_chip" "en" ]
         ]
+        -- delete this button after RFID integration:
         ,
-        button [ onClick address Next]
+        button [ onClick address Next, class "overlay"]
         [
           text "Next"
         ]
       ]
     1 ->
-      div [ class "wrapper -second" ]
+      div [ class "content -second" ]
       [
         div [ class "main_item -in_two"]
         [
@@ -220,7 +221,7 @@ content address model =
         ]
       ]
     2 ->
-      div [ class "wrapper -second" ]
+      div [ class "content -second" ]
       [
         div [ class "main_item"]
         [
@@ -259,7 +260,7 @@ content address model =
         ]
       ]
     3 ->
-      div [ class "wrapper -second" ]
+      div [ class "content -second" ]
       [
         div [ class "main_item"]
         [
@@ -280,7 +281,7 @@ content address model =
         ]
       ]
     4 ->
-      div [ class "wrapper -second" ]
+      div [ class "content -second" ]
       [
         div [ class "main_item"]
         [
@@ -304,7 +305,7 @@ content address model =
         ]
       ]
     5 ->
-      div [ class "wrapper -second" ]
+      div [ class "content -second" ]
       [
         div [ class "main_item"]
         [
@@ -346,7 +347,7 @@ content address model =
         ]
       ]
     501 ->
-      div [ class "wrapper -second" ]
+      div [ class "content -second" ]
       [
         div [ class "main_item"]
         [
@@ -367,7 +368,7 @@ content address model =
         ]
       ]
     502 ->
-      div [ class "wrapper -second" ]
+      div [ class "content -second" ]
       [
         div [ class "main_item"]
         [
@@ -388,7 +389,7 @@ content address model =
         ]
       ]
     503 ->
-      div [ class "wrapper -second" ]
+      div [ class "content -second" ]
       [
         div [ class "main_item"]
         [
@@ -406,7 +407,7 @@ content address model =
         ]
       ]
     6 ->
-      div [ class "wrapper -second" ]
+      div [ class "content -second" ]
       [
         div [ class "main_item"]
         [
@@ -423,10 +424,7 @@ content address model =
 
 view : Address Action -> Model -> Html
 view address model =
-  div []
-    [
-      content address model
-    ]
+  content address model
 
 
 -- MAIN

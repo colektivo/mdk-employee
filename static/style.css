@@ -1,3 +1,5 @@
+/*Screen 1920x1080px*/
+
 /*RESET*/
 * {
   background: transparent;
@@ -23,51 +25,81 @@ html {
   font-size: 20px;
 }
 
-.wrapper {
+.back {
   background-color: #EDEDED;
   background-image: url('images/Logo_Mdk_BW.png');
   background-position: center center;
   background-repeat: no-repeat;
-  background-size: 10%;
+  background-size: 120px;
   display: flex;
   height: 100vh;
   width: 100vw;
 }
 
-.wrapper.-second {
+.back.-main::before {
+  content: '';
+  position: absolute;
+  /*width: 100px;
+  height: 100px;*/
+  display: block;
+  bottom: 120px;
+  left: 47.5%;
+  width: 0;
+  height: 0;
+  border-left: 48px solid transparent;
+  border-right: 48px solid transparent;
+  border-top: 48px solid #BBA542;
+  animation: fade_arrow 5s infinite;
+}
+
+@keyframes fade_arrow {
+  0% {
+    bottom: 120px;
+    opacity: 0;
+  }
+  50% {
+    bottom: 60px;
+    opacity: 1;
+  }
+  100% {
+    bottom: 120px;
+    opacity: 0;
+  }
+}
+
+.content.-second {
   background-position: center 5%;
   background-size: 5%;
 }
 
 .main_item {
   background: white;
-  margin: 100px 200px;
-  padding: 50px;
+  margin: 120px 240px;
+  padding: 48px;
   width: 90%;
   display: flex;
-  align-items: center;
+  align-content: center;
   justify-content: center;
   flex-wrap: wrap;
-  align-items: stretch;
+  align-items: center;
 }
 
 .main_item.-in_two {
-  width: 40%;
-}
-
-.main_item p, .main_item a {
-  text-align: center;
-  flex-grow: 1;
-  flex-shrink: 0;
-  flex-basis: 98%;
+  width: 480px;
 }
 
 .main_item p {
   font-family: 'Graphik-Semibold';
-  font-size: 40px;
+  font-size: 36px;
   line-height: 1.45;
   color: #BBA542;
-  padding-top: 20px;
+  /*text-align: center;*/
+}
+
+.main_item p.alone {
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-basis: 98%;
 }
 
 .big_button {
@@ -121,4 +153,16 @@ html {
 
 .with_icon.-beyond {
   background-image: url('images/Beyond.png');
+}
+
+/*delete this class after RFID integration:*/
+.overlay {
+  position: absolute;
+  background: red;
+  color: white;
+  font-weight: bold;
+  padding: 10px;
+  bottom: 120px;
+  right: 120px;
+  opacity: 0.5;
 }
