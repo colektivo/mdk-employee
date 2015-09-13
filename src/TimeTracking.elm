@@ -129,8 +129,8 @@ phrase key language =
         "exploitation_p2"   -> text "Personalisierte Werbung, generiert aus Informationen von Facebook und Google, und das Ausspähen deiner Emails durch den Staat sind dabei zwei Ausprägungen desselben Mechanismus."
         "money_p1"          -> text "Dein Lohn ist auch eine gesellschaftliche Währung für Anerkennung deiner Arbeit. Wer mehr verdient, macht die wichtigere, notwendigere und verantwortungsvollere Arbeit. Aber stimmt das wirklich? In der Zeit, die du im Museum warst, hat der Fußballspieler Philipp Lahm um einiges mehr verdient als ein_e Krankenpfleger_in. Ist das gerechtfertigt? Welcher Job ist wirklich wichtig für eine Gesellschaft? Und ist eine Gesellschaft, in der Anerkennung über Geld definiert wird, wünschenswert?"
         "thankyou"          -> text "Vielen Dank für den Besuch im Museum des Kapitalismus"
-        "thankyou_p1"       -> text "Wir hoffen, dass dir die Ausstellung trotz Verlust von Geld und Zeit gefallen hat und dass du dafür etwas anderes mitnehmen konntest"
-        "thankyou_p2"       -> text "Bitte vergiss nicht, deine Chipkarte zurückzugeben"
+        "thankyou_p1"       -> text "Wir hoffen, dass dir die Ausstellung trotz Verlust von Geld und Zeit gefallen hat und dass du dafür etwas anderes mitnehmen konntest."
+        "thankyou_p2"       -> text "Bitte vergiss nicht, deine Chipkarte zurückzugeben."
         "leave_subpage"     -> text "Zurück zur Auswahl"
         "next"              -> text "Weiter"
         "previous"          -> text "Zurück"
@@ -162,7 +162,7 @@ phrase key language =
         "exploitation_p2"   -> text "Personalized advertisement on the one hand, generated through informations from facebook and google and the spying on your emails by the state on the other hand are hereby two characteristics of the same mechanism."
         "money_p1"          -> text "Your salary is also a currency of society for appreciation of your work. Who earns more is doing the more important, more necessary and the more responsible work. But is this really true? In the time you spent in the museum, the football player Philipp Lahm earned a lot more than a nurse. Is that justified? Which job is really important for a society? And do we want to live in a society where appreciation is defined by money?"
         "thankyou"          -> text "Thank you for visiting the Museum of Capitalism"
-        "thankyou_p1"       -> text "We hope that despite losing money you have enjoyed the exhibition and gained something from it"
+        "thankyou_p1"       -> text "We hope that despite losing money you have enjoyed the exhibition and gained something from it."
         "thankyou_p2"       -> text "Please don’t forget to return your chip card!"
         "leave_subpage"     -> text "Back to menu"
         "next"              -> text "Next"
@@ -202,7 +202,7 @@ content address model =
         [
           div [ class "content" ]
           [
-            p []
+            p [ class "title" ]
             [ phrase "welcome" "de" ]
             ,
             button [ onClick address (Language "de"), class "main_button" ]
@@ -217,7 +217,7 @@ content address model =
         [
           div [ class "content" ]
           [
-            p []
+            p [ class "title" ]
             [ phrase "welcome" "en" ]
             ,
             button [ onClick address (Language "en"), class "main_button" ]
@@ -466,64 +466,73 @@ content address model =
           ]
         ]
         ,
-        button [ onClick address LeaveSubpage, class "overlay previous" ]
+        button [ onClick address LeaveSubpage, class "overlay menu" ]
         [
           p []
           [ phrase "leave_subpage" model.language ]
         ]
       ]
     602 ->
-      div [ class "content -second" ]
+      div [ class "back -second" ]
       [
         div [ class "main_item"]
         [
-          p []
-          [ phrase "exploitation" model.language ]
-          ,
-          p []
-          [ phrase "exploitation_p1" model.language ]
-          ,
-          p []
-          [ phrase "exploitation_p2" model.language ]
-          ,
-          button [ onClick address LeaveSubpage, class "big_button"]
+          div [ class "content" ]
           [
-            p []
-            [ phrase "leave_subpage" model.language ]
+            p [ class "title" ]
+            [ phrase "exploitation" model.language ]
+            ,
+            p [ class "readable" ]
+            [ phrase "exploitation_p1" model.language ]
+            ,
+            p [ class "readable" ]
+            [ phrase "exploitation_p2" model.language ]
           ]
+        ]
+        ,
+        button [ onClick address LeaveSubpage, class "overlay menu" ]
+        [
+          p []
+          [ phrase "leave_subpage" model.language ]
         ]
       ]
     603 ->
-      div [ class "content -second" ]
+      div [ class "back -second" ]
       [
         div [ class "main_item"]
         [
-          p []
-          [ phrase "money" model.language ]
-          ,
-          p []
-          [ phrase "money_p1" model.language ]
-          ,
-          button [ onClick address LeaveSubpage, class "big_button"]
+          div [ class "content" ]
           [
-            p []
-            [ phrase "leave_subpage" model.language ]
+            p [ class "title" ]
+            [ phrase "money" model.language ]
+            ,
+            p [ class "readable" ]
+            [ phrase "money_p1" model.language ]
           ]
+        ]
+        ,
+        button [ onClick address LeaveSubpage, class "overlay menu" ]
+        [
+          p []
+          [ phrase "leave_subpage" model.language ]
         ]
       ]
     7 ->
-      div [ class "content -second" ]
+      div [ class "back -second" ]
       [
         div [ class "main_item"]
         [
-          p []
-          [ phrase "thankyou" model.language ]
-          ,
-          p []
-          [ phrase "thankyou_p1" model.language ]
-          ,
-          p []
-          [ phrase "thankyou_p2" model.language ]
+          div [ class "content" ]
+          [
+            p [ class "title" ]
+            [ phrase "thankyou" model.language ]
+            ,
+            p [ class "readable" ]
+            [ phrase "thankyou_p1" model.language ]
+            ,
+            p [ class "readable" ]
+            [ phrase "thankyou_p2" model.language ]
+          ]
         ]
       ]
 
