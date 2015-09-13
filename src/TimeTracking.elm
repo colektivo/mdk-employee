@@ -63,9 +63,9 @@ update action log =
     Language language ->
       { log | language <- language, page <- 2}
     Subpage subpage ->
-      { log | page <- 500 + subpage}
+      { log | page <- 600 + subpage}
     LeaveSubpage ->
-      { log | page <- 5}
+      { log | page <- 6}
 
 -- SIGNALS
 
@@ -205,7 +205,7 @@ content address model =
             p []
             [ phrase "welcome" "de" ]
             ,
-            button [ onClick address (Language "de"), class "big_button" ]
+            button [ onClick address (Language "de"), class "main_button" ]
             [
               p []
               [ text "Deutsch" ]
@@ -220,7 +220,7 @@ content address model =
             p []
             [ phrase "welcome" "en" ]
             ,
-            button [ onClick address (Language "en"), class "big_button" ]
+            button [ onClick address (Language "en"), class "main_button" ]
             [
               p []
               [ text "English" ]
@@ -353,111 +353,123 @@ content address model =
         ]
       ]
     4 ->
-      div [ class "content -second" ]
+      div [ class "back -second" ]
       [
-        div [ class "main_item"]
+        div [ class "main_item" ]
         [
-          p []
-          [ phrase "compared_visit" model.language ]
+          div [ class "content" ]
+          [
+            p [ class "title" ]
+            [ phrase "compared_visit" model.language ]
+          ]
         ]
         ,
-        button [ onClick address Previous, class "big_button"]
+        button [ onClick address Previous, class "overlay previous"]
         [
           p []
           [ phrase "previous" model.language ]
         ]
         ,
-        button [ onClick address Next, class "big_button"]
+        button [ onClick address Next, class "overlay next" ]
         [
           p []
           [ phrase "next" model.language ]
         ]
       ]
     5 ->
-      div [ class "content -second" ]
+      div [ class "back -second" ]
       [
         div [ class "main_item"]
         [
-          p []
-          [ phrase "lost" model.language ]
-          ,
-          p []
-          [ phrase "lost_explanation" model.language ]
+          div [ class "content" ]
+          [
+            p [ class "title" ]
+            [ phrase "lost" model.language ]
+            ,
+            p [ class "lead" ]
+            [ phrase "lost_explanation" model.language ]
+          ]
         ]
         ,
-        button [ onClick address Previous, class "big_button"]
+        button [ onClick address Previous, class "overlay previous"]
         [
           p []
           [ phrase "previous" model.language ]
         ]
         ,
-        button [ onClick address Next, class "big_button"]
+        button [ onClick address Next, class "overlay next" ]
         [
           p []
           [ phrase "next" model.language ]
         ]
       ]
     6 ->
-      div [ class "content -second" ]
+      div [ class "back -second" ]
       [
-        div [ class "main_item"]
+        div [ class "main_item" ]
+        [
+          div [ class "content" ]
+          [
+            p [ class "title" ]
+            [ phrase "point" model.language ]
+            ,
+            p [ class "lead" ]
+            [ phrase "point_explanation" model.language ]
+            ,
+            button [ onClick address (Subpage 1), class "main_button -medium" ]
+            [
+              p []
+              [ phrase "comparability" model.language ]
+            ]
+            ,
+            button [ onClick address (Subpage 2), class "main_button -medium" ]
+            [
+              p []
+              [ phrase "exploitation" model.language ]
+            ]
+            ,
+            button [ onClick address (Subpage 3), class "main_button -medium"]
+            [
+              p []
+              [ phrase "money" model.language ]
+            ]
+          ]
+        ]
+        ,
+        button [ onClick address Previous, class "overlay previous"]
         [
           p []
-          [ phrase "point" model.language ]
-          ,
+          [ phrase "previous" model.language ]
+        ]
+        ,
+        button [ onClick address Next, class "overlay next" ]
+        [
           p []
-          [ phrase "point_explanation" model.language ]
-          ,
-          button [ onClick address (Subpage 1), class "big_button"]
-          [
-            p []
-            [ phrase "comparability" model.language ]
-          ]
-          ,
-          button [ onClick address (Subpage 2), class "big_button"]
-          [
-            p []
-            [ phrase "exploitation" model.language ]
-          ]
-          ,
-          button [ onClick address (Subpage 3), class "big_button"]
-          [
-            p []
-            [ phrase "money" model.language ]
-          ]
-          ,
-          button [ onClick address Previous, class "big_button"]
-          [
-            p []
-            [ phrase "previous" model.language ]
-          ]
-          ,
-          button [ onClick address Next, class "big_button"]
-          [
-            p []
-            [ phrase "next" model.language ]
-          ]
+          [ phrase "next" model.language ]
         ]
       ]
     601 ->
-      div [ class "content -second" ]
+      div [ class "back -second" ]
       [
         div [ class "main_item"]
         [
-          p []
-          [ phrase "comparability" model.language ]
-          ,
-          p []
-          [ phrase "comparability_p1" model.language ]
-          ,
-          p []
-          [ phrase "comparability_p2" model.language ]
-          ,
-          button [ onClick address LeaveSubpage, class "big_button"]
+          div [ class "content" ]
           [
-            p []
-            [ phrase "leave_subpage" model.language ]
+            p [ class "title" ]
+            [ phrase "comparability" model.language ]
+            ,
+            p [ class "readable" ]
+            [ phrase "comparability_p1" model.language ]
+            ,
+            p [ class "readable" ]
+            [ phrase "comparability_p2" model.language ]
           ]
+        ]
+        ,
+        button [ onClick address LeaveSubpage, class "overlay previous" ]
+        [
+          p []
+          [ phrase "leave_subpage" model.language ]
         ]
       ]
     602 ->

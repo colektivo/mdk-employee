@@ -97,7 +97,7 @@ html {
   align-items: center;
 }
 
-.big_button {
+.main_button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -110,13 +110,21 @@ html {
   animation: fade_button 5s infinite;
 }
 
-.big_button p {
+.main_button p {
   text-transform: uppercase;
   font-size: 26px;
   letter-spacing: 5px;
   color: white;
   text-align: center;
   animation: fade_text 5s infinite;
+  padding: 12px;
+}
+
+.main_button.-medium {
+  width: 26%;
+  margin-left: 2%;
+  margin-right: 2%;
+  height: 40vh;
 }
 
 .title {
@@ -138,27 +146,27 @@ p.panel {
 
 .panel.-needs {
   background-image: url('images/Needs.png');
-  animation: introduce_text 5s;
+  animation: introduce_text 3s;
 }
 
 .panel.-mechanisms {
   background-image: url('images/Mechanisms.png');
-  animation: introduce_text 10s;
+  animation: introduce_text 6s;
 }
 
 .panel.-competition {
   background-image: url('images/Competition.png');
-  animation: introduce_text 15s;
+  animation: introduce_text 9s;
 }
 
 .panel.-colonialism {
   background-image: url('images/Colonialism.png');
-  animation: introduce_text 20s;
+  animation: introduce_text 12s;
 }
 
 .panel.-beyond {
   background-image: url('images/Beyond.png');
-  animation: introduce_text 25s;
+  animation: introduce_text 15s;
 }
 
 .big_number {
@@ -191,6 +199,13 @@ p.panel {
   text-align: center;
   width: 100%;
   height: auto;
+}
+
+p.readable {
+  font-size: 26px;
+  text-align: left;
+  margin: 12px auto;
+  width: 70%;
 }
 
 /*NAVIGATION*/
