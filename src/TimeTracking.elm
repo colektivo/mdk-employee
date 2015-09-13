@@ -194,32 +194,39 @@ content address model =
         ]
       ]
     1 ->
-      div [ class "content -second" ]
+      div [ class "back -second" ]
       [
         div [ class "main_item -in_two"]
         [
-          p []
-          [ phrase "welcome" "de" ]
-          ,
-          button [ onClick address (Language "de"), class "big_button"]
+          div [ class "content"]
           [
             p []
-            [ text "Deutsch" ]
+            [ phrase "welcome" "de" ]
+            ,
+            button [ onClick address (Language "de"), class "big_button"]
+            [
+              p []
+              [ text "Deutsch" ]
+            ]
           ]
         ]
         ,
         div [ class "main_item -in_two"]
         [
-          p []
-          [ phrase "welcome" "en" ]
-          ,
-          button [ onClick address (Language "en"), class "big_button"]
+          div [ class "content"]
           [
             p []
-            [ text "English" ]
+            [ phrase "welcome" "en" ]
+            ,
+            button [ onClick address (Language "en"), class "big_button"]
+            [
+              p []
+              [ text "English" ]
+            ]
           ]
         ]
       ]
+      -- Consider adding here some graphic / feedback about data received
     2 ->
       div [ class "content -second" ]
       [

@@ -67,9 +67,9 @@ html {
   }
 }
 
-.content.-second {
-  background-position: center 5%;
-  background-size: 5%;
+.back.-second {
+  background-position: center 30px;
+  background-size: 60px;
 }
 
 .main_item {
@@ -93,35 +93,46 @@ html {
   font-size: 36px;
   line-height: 1.45;
   color: #BBA542;
+  width: 100%;
+  height: auto;
   /*text-align: center;*/
 }
 
-.main_item p.alone {
+.content {
   flex-grow: 1;
   flex-shrink: 0;
-  flex-basis: 98%;
+  flex-basis: 100%;
+  display:flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
 }
 
 .big_button {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 10px solid #3E5D9C;
+  border: 6px solid #3E5D9C;
   border-radius: 12px;
   height: 50vh;
+  width: 100%;
   margin-top: 30px;
   text-transform: uppercase;
 }
 
 .big_button:hover {
-  background: black;
-  border: 10px solid black;
+  background: #3E5D9C;
+  border: 6px solid #3E5D9C;
+  opacity: 0.8;
 }
 
 .big_button p {
-  font-size: 30px;
-  letter-spacing: 4px;
+  font-size: 26px;
+  letter-spacing: 5px;
   color: #3E5D9C;
+  text-align: center;
 }
 
 .big_button:hover p {
