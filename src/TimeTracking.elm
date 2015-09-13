@@ -188,7 +188,7 @@ content address model =
         ]
         -- delete this button after RFID integration:
         ,
-        button [ onClick address Next, class "overlay"]
+        button [ onClick address Next, class "overlay next"]
         [
           text "Next"
         ]
@@ -263,7 +263,7 @@ content address model =
           ]
         ]
         ,
-        button [ onClick address Next, class "overlay"]
+        button [ onClick address Next, class "overlay next"]
         [
           p []
           [ phrase "next" model.language ]
