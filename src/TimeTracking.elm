@@ -107,8 +107,8 @@ phrase key language =
         "welcome"           -> text "Willkommen!"
         "place_chip"        -> text "Bitte halte deine Chipkarte auf das Lesegerät um deine persönliche Auswertung zu erhalten"
         "total_duration"    -> text "Dauer deines Aufenthaltes im Museum"
-        "duration_hours"    -> text "1 Stunde"
-        "duration_minutes"  -> text "15 Minuten"
+        "duration_hours"    -> text "Stunde"
+        "duration_minutes"  -> text "Minuten"
         "duration_by_area"  -> text "Wie lange warst du in jedem Themenbereich?"
         "needs"             -> text "Needs and Exclusions"
         "mechanisms"        -> text "Mechanisms of Capitalism"
@@ -140,8 +140,8 @@ phrase key language =
         "welcome"           -> text "Welcome!"
         "place_chip"        -> text "Please place your chipcard on the reading device to receive your personal evaluation"
         "total_duration"    -> text "Duration of your visit at the Museum"
-        "duration_hours"    -> text "1 hour"
-        "duration_minutes"  -> text "15 minutes"
+        "duration_hours"    -> text "hour"
+        "duration_minutes"  -> text "minutes"
         "duration_by_area"  -> text "How long have you been in each subject area?"
         "needs"             -> text "Needs and Exclusions"
         "mechanisms"        -> text "Mechanisms of Capitalism"
@@ -228,19 +228,52 @@ content address model =
       ]
       -- Consider adding here some graphic / feedback about data received
     2 ->
+      div [ class "back -second" ]
+      [
+        div [ class "main_item"]
+        [
+          div [ class "content"]
+          [
+            p [ class "title"]
+            [ phrase "total_duration" model.language ]
+            ,
+            -- just show if more than 60 minutes:
+            p [ class "title"]
+            [
+              span [ class "big_number"]
+              [
+                text "1"
+              ]
+              ,
+              -- change phrase depending on singular or plural:
+              phrase "duration_hours" model.language
+            ]
+            ,
+            -- just show if minutes are not 0
+            p [ class "title"]
+            [
+              span [ class "big_number"]
+              [
+                text "35"
+              ]
+              ,
+              -- change phrase depending on singular or plural:
+              phrase "duration_minutes" model.language
+            ]
+          ]
+        ]
+        ,
+        button [ onClick address Next, class "overlay"]
+        [
+          p []
+          [ phrase "next" model.language ]
+        ]
+      ]
+    3 ->
       div [ class "content -second" ]
       [
         div [ class "main_item"]
         [
-          p []
-          [ phrase "total_duration" model.language ]
-          ,
-          p []
-          [ phrase "duration_hours" model.language ]
-          ,
-          p []
-          [ phrase "duration_minutes" model.language ]
-          ,
           p []
           [ phrase "duration_by_area" model.language ]
           ,
@@ -266,7 +299,7 @@ content address model =
           [ phrase "next" model.language ]
         ]
       ]
-    3 ->
+    4 ->
       div [ class "content -second" ]
       [
         div [ class "main_item"]
@@ -287,7 +320,7 @@ content address model =
           [ phrase "next" model.language ]
         ]
       ]
-    4 ->
+    5 ->
       div [ class "content -second" ]
       [
         div [ class "main_item"]
@@ -311,7 +344,7 @@ content address model =
           [ phrase "next" model.language ]
         ]
       ]
-    5 ->
+    6 ->
       div [ class "content -second" ]
       [
         div [ class "main_item"]
@@ -353,7 +386,7 @@ content address model =
           ]
         ]
       ]
-    501 ->
+    601 ->
       div [ class "content -second" ]
       [
         div [ class "main_item"]
@@ -374,7 +407,7 @@ content address model =
           ]
         ]
       ]
-    502 ->
+    602 ->
       div [ class "content -second" ]
       [
         div [ class "main_item"]
@@ -395,7 +428,7 @@ content address model =
           ]
         ]
       ]
-    503 ->
+    603 ->
       div [ class "content -second" ]
       [
         div [ class "main_item"]
@@ -413,7 +446,7 @@ content address model =
           ]
         ]
       ]
-    6 ->
+    7 ->
       div [ class "content -second" ]
       [
         div [ class "main_item"]

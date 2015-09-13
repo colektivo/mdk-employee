@@ -25,6 +25,8 @@ html {
   font-size: 20px;
 }
 
+/*BACK*/
+
 .back {
   background-color: #EDEDED;
   background-image: url('images/Logo_Mdk_BW.png');
@@ -39,8 +41,6 @@ html {
 .back.-main::before {
   content: '';
   position: absolute;
-  /*width: 100px;
-  height: 100px;*/
   display: block;
   bottom: 120px;
   left: 47.5%;
@@ -52,25 +52,12 @@ html {
   animation: fade_arrow 5s infinite;
 }
 
-@keyframes fade_arrow {
-  0% {
-    bottom: 120px;
-    opacity: 0;
-  }
-  50% {
-    bottom: 60px;
-    opacity: 1;
-  }
-  100% {
-    bottom: 120px;
-    opacity: 0;
-  }
-}
-
 .back.-second {
   background-position: center 30px;
   background-size: 60px;
 }
+
+/*BOXES*/
 
 .main_item {
   background: white;
@@ -95,8 +82,11 @@ html {
   color: #BBA542;
   width: 100%;
   height: auto;
+  letter-spacing: -.7px;
   /*text-align: center;*/
 }
+
+/*CONTENT*/
 
 .content {
   flex-grow: 1;
@@ -115,17 +105,12 @@ html {
   align-items: center;
   justify-content: center;
   border: 6px solid #3E5D9C;
-  border-radius: 12px;
+  border-radius: 6px;
   height: 50vh;
   width: 100%;
   margin-top: 30px;
   text-transform: uppercase;
-}
-
-.big_button:hover {
-  background: #3E5D9C;
-  border: 6px solid #3E5D9C;
-  opacity: 0.8;
+  animation: fade_button 5s infinite;
 }
 
 .big_button p {
@@ -133,10 +118,20 @@ html {
   letter-spacing: 5px;
   color: #3E5D9C;
   text-align: center;
+  animation: fade_text 5s infinite;
 }
 
-.big_button:hover p {
-  color: white;
+.title {
+  text-align: center;
+}
+
+.big_number {
+  display: block;
+  font-size: 156px;
+  line-height: 120px;
+  padding-top: 60px;
+  letter-spacing: -5px;
+  animation: introduce_text 5s;
 }
 
 .with_icon {
@@ -164,6 +159,51 @@ html {
 
 .with_icon.-beyond {
   background-image: url('images/Beyond.png');
+}
+
+/*TRANSITIONS*/
+
+@keyframes fade_arrow {
+  0% {
+    bottom: 120px;
+    opacity: 0;
+  }
+  50% {
+    bottom: 60px;
+    opacity: 1;
+  }
+  100% {
+    bottom: 120px;
+    opacity: 0;
+  }
+}
+
+@keyframes fade_text {
+  0% {
+    color: #3E5D9C;
+  }
+  50% {
+    color: white;
+  }
+  100% {
+    color: #3E5D9C;
+  }
+}
+
+@keyframes fade_button {
+  50% {
+    background-color: rgba(62, 93, 156, 0.5);
+    border: 6px solid #3E5D9C;
+  }
+}
+
+@keyframes introduce_text {
+  0% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 /*delete this class after RFID integration:*/
