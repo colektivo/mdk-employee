@@ -169,26 +169,28 @@ phrase key language =
         "previous"          -> text "Previous"
         _                   -> text ("Unknown. Key name: " ++ key)
 
+
+
 content: Address Action -> Model -> Html
 content address model =
   case model.page of
     0 ->
       div [ class "back -main" ]
       [
-        div [ class "main_item -in_two"]
+        div [ class "main_item -in_two" ]
         [
           p [ class "content" ]
           [ phrase "place_chip" "de" ]
         ]
         ,
-        div [ class "main_item -in_two"]
+        div [ class "main_item -in_two" ]
         [
           p [ class "content" ]
           [ phrase "place_chip" "en" ]
         ]
         -- delete this button after RFID integration:
         ,
-        button [ onClick address Next, class "overlay next"]
+        button [ onClick address Next, class "overlay next" ]
         [
           text "Next"
         ]
@@ -196,14 +198,14 @@ content address model =
     1 ->
       div [ class "back -second" ]
       [
-        div [ class "main_item -in_two"]
+        div [ class "main_item -in_two" ]
         [
-          div [ class "content"]
+          div [ class "content" ]
           [
             p []
             [ phrase "welcome" "de" ]
             ,
-            button [ onClick address (Language "de"), class "big_button"]
+            button [ onClick address (Language "de"), class "big_button" ]
             [
               p []
               [ text "Deutsch" ]
@@ -211,14 +213,14 @@ content address model =
           ]
         ]
         ,
-        div [ class "main_item -in_two"]
+        div [ class "main_item -in_two" ]
         [
-          div [ class "content"]
+          div [ class "content" ]
           [
             p []
             [ phrase "welcome" "en" ]
             ,
-            button [ onClick address (Language "en"), class "big_button"]
+            button [ onClick address (Language "en"), class "big_button" ]
             [
               p []
               [ text "English" ]
@@ -230,32 +232,28 @@ content address model =
     2 ->
       div [ class "back -second" ]
       [
-        div [ class "main_item"]
+        div [ class "main_item" ]
         [
-          div [ class "content"]
+          div [ class "content" ]
           [
-            p [ class "title"]
+            p [ class "title" ]
             [ phrase "total_duration" model.language ]
             ,
             -- just show if more than 60 minutes:
-            p [ class "title"]
+            p [ class "lead" ]
             [
-              span [ class "big_number"]
-              [
-                text "1"
-              ]
+              span [ class "big_number" ]
+              [ text "1" ]
               ,
               -- change phrase depending on singular or plural:
               phrase "duration_hours" model.language
             ]
             ,
             -- just show if minutes are not 0
-            p [ class "title"]
+            p [ class "lead"]
             [
               span [ class "big_number"]
-              [
-                text "35"
-              ]
+              [ text "35" ]
               ,
               -- change phrase depending on singular or plural:
               phrase "duration_minutes" model.language
@@ -263,6 +261,7 @@ content address model =
           ]
         ]
         ,
+        -- if there are not data for next slide skip and go to slide 4
         button [ onClick address Next, class "overlay next"]
         [
           p []
@@ -270,30 +269,84 @@ content address model =
         ]
       ]
     3 ->
-      div [ class "content -second" ]
+      div [ class "back -second" ]
       [
-        div [ class "main_item"]
+        div [ class "main_item" ]
         [
-          p []
-          [ phrase "duration_by_area" model.language ]
-          ,
-          p [ class "with_icon -needs"]
-          [ phrase "needs" model.language ]
-          ,
-          p [ class "with_icon -mechanisms"]
-          [ phrase "mechanisms" model.language ]
-          ,
-          p [ class "with_icon -competition"]
-          [ phrase "competition" model.language ]
-          ,
-          p [ class "with_icon -colonialism"]
-          [ phrase "colonialism" model.language ]
-          ,
-          p [ class "with_icon -beyond"]
-          [ phrase "beyond" model.language ]
+          div [ class "content" ]
+          [
+            p [ class "title" ]
+            [ phrase "duration_by_area" model.language ]
+            ,
+            p [ class "panel -needs" ]
+            [
+              span [ class "panel_title" ]
+              [ phrase "needs" model.language ]
+              ,
+              span [class "big_number" ]
+              [ text "10" ]
+              ,
+              span [class "panel_time" ]
+              [ phrase "duration_minutes" model.language ]
+            ]
+            ,
+            p [ class "panel -mechanisms" ]
+            [
+              span [ class "panel_title" ]
+              [ phrase "mechanisms" model.language ]
+              ,
+              span [class "big_number" ]
+              [ text "23" ]
+              ,
+              span [class "panel_time" ]
+              [ phrase "duration_minutes" model.language ]
+            ]
+            ,
+            p [ class "panel -competition" ]
+            [
+              span [ class "panel_title" ]
+              [ phrase "competition" model.language ]
+              ,
+              span [class "big_number" ]
+              [ text "35" ]
+              ,
+              span [class "panel_time" ]
+              [ phrase "duration_minutes" model.language ]
+            ]
+            ,
+            p [ class "panel -colonialism"]
+            [
+              span [ class "panel_title"]
+              [ phrase "colonialism" model.language ]
+              ,
+              span [class "big_number"]
+              [ text "5"]
+              ,
+              span [class "panel_time"]
+              [ phrase "duration_minutes" model.language]
+            ]
+            ,
+            p [ class "panel -beyond"]
+            [
+              span [ class "panel_title"]
+              [ phrase "beyond" model.language ]
+              ,
+              span [class "big_number"]
+              [ text "110"]
+              ,
+              span [class "panel_time"]
+              [ phrase "duration_minutes" model.language]
+            ]
+          ]
         ]
         ,
-        button [ onClick address Next, class "big_button"]
+        button [ onClick address Previous, class "overlay previous"]
+        [
+          p []
+          [ phrase "previous" model.language ]
+        ]
+        ,
+        button [ onClick address Next, class "overlay next" ]
         [
           p []
           [ phrase "next" model.language ]

@@ -80,8 +80,6 @@ html {
   font-size: 36px;
   line-height: 1.45;
   color: #BBA542;
-  width: 100%;
-  height: auto;
   letter-spacing: -.7px;
 }
 
@@ -109,11 +107,11 @@ html {
   height: 50vh;
   width: 100%;
   margin-top: 30px;
-  text-transform: uppercase;
   animation: fade_button 5s infinite;
 }
 
 .big_button p {
+  text-transform: uppercase;
   font-size: 26px;
   letter-spacing: 5px;
   color: white;
@@ -123,6 +121,44 @@ html {
 
 .title {
   text-align: center;
+  width: 100%;
+  height: 120px;
+}
+
+p.panel {
+  height: 27vh;
+  width: 18% !important;
+  display: block;
+  background-repeat: no-repeat;
+  background-size: 180px;
+  background-position: top center;
+  text-align: center;
+  padding-top: 204px;
+}
+
+.panel.-needs {
+  background-image: url('images/Needs.png');
+  animation: introduce_text 5s;
+}
+
+.panel.-mechanisms {
+  background-image: url('images/Mechanisms.png');
+  animation: introduce_text 10s;
+}
+
+.panel.-competition {
+  background-image: url('images/Competition.png');
+  animation: introduce_text 15s;
+}
+
+.panel.-colonialism {
+  background-image: url('images/Colonialism.png');
+  animation: introduce_text 20s;
+}
+
+.panel.-beyond {
+  background-image: url('images/Beyond.png');
+  animation: introduce_text 25s;
 }
 
 .big_number {
@@ -131,37 +167,47 @@ html {
   line-height: 120px;
   padding-top: 60px;
   letter-spacing: -5px;
+}
+
+.lead .big_number {
   animation: introduce_text 5s;
 }
 
-.with_icon {
-  height: 100px;
-  width: 100px;
-  background-repeat: no-repeat;
-  background-size: cover;
+.panel_title {
+  display: block;
+  font-size: 16px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  height: 24px;
 }
 
-.with_icon.-needs {
-  background-image: url('images/Needs.png');
+.panel_time {
+  display: block;
+  font-size: 24px;
+  text-transform: none;
 }
 
-.with_icon.-mechanisms {
-  background-image: url('images/Mechanisms.png');
-}
-
-.with_icon.-competition {
-  background-image: url('images/Competition.png');
-}
-
-.with_icon.-colonialism {
-  background-image: url('images/Colonialism.png');
-}
-
-.with_icon.-beyond {
-  background-image: url('images/Beyond.png');
+.lead {
+  text-align: center;
+  width: 100%;
+  height: auto;
 }
 
 /*NAVIGATION*/
+.overlay {
+  position: absolute;
+  color: #3E5D9C;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 5px;
+}
+
+.next {
+  bottom: 120px;
+  right: 120px;
+}
+
 .next::before {
   content: '';
   width: 0;
@@ -173,12 +219,20 @@ html {
   display: block;
 }
 
-.overlay {
-  position: absolute;
+.previous {
   bottom: 120px;
-  right: 120px;
-  color: #3E5D9C;
-  font-weight: bold;
+  left: 120px;
+}
+
+.previous::before {
+  content: '';
+  width: 0;
+  height: 0;
+  border-top: 60px solid transparent;
+  border-bottom: 60px solid transparent;
+  border-right: 60px solid #BBA542; /*champagne*/
+  animation: fade_navigation 5s infinite;
+  display: block;
 }
 
 /*TRANSITIONS*/
