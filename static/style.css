@@ -135,6 +135,47 @@ p.title {
   opacity: 0.7;
 }
 
+p.prof_panel {
+  height: 200px;
+  width: 8% !important;
+  display: block;
+  background-repeat: no-repeat;
+  background-size: 180px;
+  background-position: top left;
+  text-align: center;
+  padding-top: 224px;
+  display:flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+}
+
+p.prof_panel span {
+  width: 100%;
+  height: 200px;
+}
+
+p.prof_panel.-football {
+  width: 100% !important;
+}
+
+p.prof_panel.-football .panel_title {
+  width: 30%;
+  padding-top: 242px;
+}
+
+p.prof_panel.-football .big_number {
+  width: 40%;
+}
+
+p.prof_panel.-football .panel_time {
+  width: 30%;
+  padding-top: 162px;
+  text-align: left;
+}
+
 p.panel {
   height: 27vh;
   width: 18% !important;

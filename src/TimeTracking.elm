@@ -388,6 +388,30 @@ content address model =
             ,
             p [ class "lead" ]
             [ phrase "lost_explanation" model.language ]
+            ,
+            p [ class "prof_panel -football" ]
+            [
+              span [ class "panel_title" ]
+              [ text "Philip Lahm, football player" ]
+              ,
+              span [class "big_number" ]
+              [ text "9143€" ]
+              ,
+              span [class "panel_time" ]
+              [ text "if you are Philip Lahm and play football for 830.000 EUR a month" ]
+            ,
+            p [ class "prof_panel -doctor" ]
+            [
+              span [ class "panel_title" ]
+              [ text "Chief physician" ]
+              ,
+              span [class "big_number" ]
+              [ text "176€" ]
+              ,
+              span [class "panel_time" ]
+              [ text "if you are a Chief physician in a hospital making 16.000 EUR a month" ]
+            ]
+            ]
           ]
         ]
         ,
