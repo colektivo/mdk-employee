@@ -18,8 +18,8 @@ import Json.Encode as Encode
 --   isComplete: false }
 
 type alias WorkingTime = { years: Int, months: Int, days: Int, hours: Int, minutes: Int, seconds: Int, decimalTime: Float }
-type alias TimeSpent =  { hours: Maybe Int, minutes: Maybe Int, seconds: Maybe Int, timeSpentInSeconds : Float }
-type alias Report = { position: Int, timeSpent: TimeSpent }
+type alias TimeSpent =  { hours: Maybe Int, minutes: Maybe Int, seconds: Maybe Int }
+type alias Report = { position: Int, timeSpent: TimeSpent, timeSpentInSeconds : Float }
 type alias VisitorData = { workingTime : WorkingTime, timeReport : List Report, isValid: Bool, isComplete: Bool }
 
 decodeVisitorData: String -> Result String VisitorData
@@ -32,18 +32,17 @@ decodeVisitorData =
 
 decodeReport: Decode.Decoder Report
 decodeReport =
-  Decode.object2 Report
+  Decode.object3 Report
     ( "position" := Decode.int )
     ( "timeSpent" := decodeTimeSpent )
+    ( "timeSpentInSeconds" := Decode.float )
 
 decodeTimeSpent: Decode.Decoder TimeSpent
 decodeTimeSpent =
-  Decode.object4 TimeSpent
+  Decode.object3 TimeSpent
     ( Decode.maybe ("hours" := Decode.int ) )
     ( Decode.maybe ("minutes" := Decode.int ) )
     ( Decode.maybe ("seconds" := Decode.int ) )
-    ( "timeSpentInSeconds" := Decode.float )
-
 
 workingTime : Decode.Decoder WorkingTime
 workingTime =
