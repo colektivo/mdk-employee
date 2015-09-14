@@ -3,12 +3,14 @@ module TimeTracking where
 import Graphics.Element exposing (show)
 import Task             exposing (Task, andThen)
 import String
+import Keyboard
 import Time
 import SocketIO
 import Html             exposing (..)
 import Html.Attributes  exposing (..)
 import Html.Events      exposing (onClick)
 import Signal           exposing (..)
+import VisitorData      exposing (..)
 
 socket : Task x SocketIO.Socket
 socket = SocketIO.io "http://localhost:8001" SocketIO.defaultOptions
@@ -23,7 +25,7 @@ port responses = socket `andThen` SocketIO.on "completed" received.address
 -- MODEL
 
 type alias Model =
-  {  events: List String,
+  {  visitorData: Result String VisitorData,
     page: Int,
     language: String
   }
@@ -31,11 +33,10 @@ type alias Model =
 initialModel : Model
 initialModel =
   {
-    events = [],
+    visitorData = decodeVisitorData "",
     page = 0,
     language = ""
   }
-
 
 -- ACTIONS
 
@@ -46,20 +47,23 @@ type Action =   Next
           | Language String
           | Subpage Int
           | LeaveSubpage
+          | NoOp
 
 -- UPDATE
 
 update : Action -> Model -> Model
 update action log =
   case action of
+    NoOp ->
+      log
     Previous ->
       { log | page <- log.page - 1 }
     Next ->
       { log | page <- log.page + 1 }
     Start data ->
-      { log | events <- log.events ++ [data] }
+      { log | visitorData <- decodeVisitorData data, page <- 1 }
     Reset ->
-      { log | events <- [], page <- 0 }
+      { log | visitorData <- decodeVisitorData "", page <- 0 }
     Language language ->
       { log | language <- language, page <- 2}
     Subpage subpage ->
@@ -68,6 +72,24 @@ update action log =
       { log | page <- 6}
 
 -- SIGNALS
+
+direction: Signal Int
+direction =
+  Signal.map .x Keyboard.arrows
+
+directionToAction: Int -> Action
+directionToAction direction =
+  case direction + 1 of
+    2 ->
+      Next
+    0 ->
+      Previous
+    _ ->
+      NoOp
+
+movement: Signal Action
+movement =
+  Signal.map directionToAction direction
 
 actions: Mailbox Action
 actions =
@@ -81,8 +103,13 @@ cardinput : Signal Action
 cardinput =
   Signal.map Start received.signal
 
+cardAndKeyboardInputs : Signal Action
+cardAndKeyboardInputs =
+  Signal.merge cardinput movement
+
 allinputs : Signal Action
-allinputs = Signal.merge actions.signal cardinput
+allinputs =
+  Signal.merge actions.signal cardAndKeyboardInputs
 
 model: Signal Model
 model =
@@ -216,7 +243,7 @@ phrase key language =
         "student_p"             -> text "if you are a student receiving 670 EUR BAföG"
         "sources"               -> text "Sources: http://www.gehaltsreporter.de https://www.nettolohn.de http://www.lohnspiegel.de"
         _                       -> text ("Unknown. Key name: " ++ key)
-
+    _ -> text "unkown language"
 
 
 content: Address Action -> Model -> Html
@@ -238,6 +265,9 @@ content address model =
         ]
         -- delete this button after RFID integration:
         ,
+        div []
+          [ text (toString model.visitorData) ]
+        ,
         button [ onClick address Next, class "overlay next" ]
         [
           text "Next"
@@ -246,6 +276,9 @@ content address model =
     1 ->
       div [ class "back -second" ]
       [
+
+        div [] [ text (toString model.visitorData) ]
+        ,
         div [ class "main_item -in_two" ]
         [
           div [ class "content" ]
@@ -727,7 +760,15 @@ content address model =
           ]
         ]
       ]
-
+    _ ->
+      div []
+        [
+          div []
+          [text "error: unkonw page" ]
+          ,
+          div []
+          [ text (toString model.page) ]
+        ]
 view : Address Action -> Model -> Html
 view address model =
   content address model
