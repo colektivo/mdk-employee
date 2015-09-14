@@ -130,50 +130,115 @@ html {
 p.title {
   text-align: center;
   width: 100%;
-  height: 120px;
+  height: 90px;
   color: #3E5D9C;
   opacity: 0.7;
 }
 
 p.prof_panel {
-  height: 200px;
+  height: 210px;
   width: 8% !important;
   display: block;
   background-repeat: no-repeat;
-  background-size: 180px;
+  background-size: 90% 30%;
   background-position: top left;
   text-align: center;
-  padding-top: 224px;
   display:flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
   align-content: center;
   align-items: center;
+  margin-left: 12px;
+  margin-right: 12px;
 }
 
 p.prof_panel span {
   width: 100%;
-  height: 200px;
+  height: auto;
+}
+
+p.prof_panel .panel_title {
+  padding-top: 116px;
+  font-size: 12px;
+  height: 32px;
+}
+
+p.prof_panel .panel_number {
+  font-size: 36px;
+  height: 56px;
+}
+
+p.prof_panel .panel_small {
+  font-size: 12px;
 }
 
 p.prof_panel.-football {
+  background-image: url('images/football.svg');
   width: 100% !important;
+  background-size: 90px;
+  background-position: 305px 45px;
+  height: 190px;
 }
 
 p.prof_panel.-football .panel_title {
   width: 30%;
-  padding-top: 242px;
+  padding-top: 72px;
+  font-size: 14px;
+  text-align: right;
 }
 
 p.prof_panel.-football .big_number {
+  padding-top: 0;
+  font-size: 120px;
   width: 40%;
 }
 
-p.prof_panel.-football .panel_time {
+p.prof_panel.-football .panel_medium {
+  font-size: 24px;
   width: 30%;
-  padding-top: 162px;
+  padding-top: 20px;
   text-align: left;
+}
+
+p.prof_panel.-doctor {
+  background-image: url('images/doctor.svg');
+}
+
+p.prof_panel.-manager {
+  background-image: url('images/manager.svg');
+}
+
+p.prof_panel.-pilot {
+  background-image: url('images/pilot.svg');
+}
+
+p.prof_panel.-judge {
+  background-image: url('images/judge.svg');
+}
+
+p.prof_panel.-teacher {
+  background-image: url('images/teacher.svg');
+}
+
+p.prof_panel.-mechanic {
+  background-image: url('images/mechanic.svg');
+}
+
+p.prof_panel.-salesman {
+  background-image: url('images/salesman.svg');
+}
+
+p.prof_panel.-nurse {
+  background-image: url('images/nurse.svg');
+}
+
+p.prof_panel.-hairdresser {
+  background-image: url('images/hairdresser.svg');
+}
+
+p.prof_panel.-student {
+  background-image: url('images/student.svg');
 }
 
 p.panel {

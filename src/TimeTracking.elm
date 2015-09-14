@@ -397,20 +397,128 @@ content address model =
               span [class "big_number" ]
               [ text "9143€" ]
               ,
-              span [class "panel_time" ]
+              span [class "panel_medium" ]
               [ text "if you are Philip Lahm and play football for 830.000 EUR a month" ]
+            ]
             ,
             p [ class "prof_panel -doctor" ]
             [
               span [ class "panel_title" ]
               [ text "Chief physician" ]
               ,
-              span [class "big_number" ]
+              span [class "panel_number" ]
               [ text "176€" ]
               ,
-              span [class "panel_time" ]
+              span [class "panel_small" ]
               [ text "if you are a Chief physician in a hospital making 16.000 EUR a month" ]
             ]
+            ,
+            p [ class "prof_panel -manager" ]
+            [
+              span [ class "panel_title" ]
+              [ text "Manager" ]
+              ,
+              span [class "panel_number" ]
+              [ text "176€" ]
+              ,
+              span [class "panel_small" ]
+              [ text "if you are a Chief physician in a hospital making 16.000 EUR a month" ]
+            ]
+            ,
+            p [ class "prof_panel -pilot" ]
+            [
+              span [ class "panel_title" ]
+              [ text "Pilot" ]
+              ,
+              span [class "panel_number" ]
+              [ text "176€" ]
+              ,
+              span [class "panel_small" ]
+              [ text "if you are a Chief physician in a hospital making 16.000 EUR a month" ]
+            ]
+            ,
+            p [ class "prof_panel -judge" ]
+            [
+              span [ class "panel_title" ]
+              [ text "Judge" ]
+              ,
+              span [class "panel_number" ]
+              [ text "176€" ]
+              ,
+              span [class "panel_small" ]
+              [ text "if you are a Chief physician in a hospital making 16.000 EUR a month" ]
+            ]
+            ,
+            p [ class "prof_panel -teacher" ]
+            [
+              span [ class "panel_title" ]
+              [ text "Teacher" ]
+              ,
+              span [class "panel_number" ]
+              [ text "176€" ]
+              ,
+              span [class "panel_small" ]
+              [ text "if you are a Chief physician in a hospital making 16.000 EUR a month" ]
+            ]
+            ,
+            p [ class "prof_panel -mechanic" ]
+            [
+              span [ class "panel_title" ]
+              [ text "Mechanic" ]
+              ,
+              span [class "panel_number" ]
+              [ text "176€" ]
+              ,
+              span [class "panel_small" ]
+              [ text "if you are a Chief physician in a hospital making 16.000 EUR a month" ]
+            ]
+            ,
+            p [ class "prof_panel -salesman" ]
+            [
+              span [ class "panel_title" ]
+              [ text "Insurance salesman" ]
+              ,
+              span [class "panel_number" ]
+              [ text "176€" ]
+              ,
+              span [class "panel_small" ]
+              [ text "if you are a Chief physician in a hospital making 16.000 EUR a month" ]
+            ]
+            ,
+            p [ class "prof_panel -nurse" ]
+            [
+              span [ class "panel_title" ]
+              [ text "Nurse" ]
+              ,
+              span [class "panel_number" ]
+              [ text "176€" ]
+              ,
+              span [class "panel_small" ]
+              [ text "if you are a Chief physician in a hospital making 16.000 EUR a month" ]
+            ]
+            ,
+            p [ class "prof_panel -hairdresser" ]
+            [
+              span [ class "panel_title" ]
+              [ text "hairdresser" ]
+              ,
+              span [class "panel_number" ]
+              [ text "176€" ]
+              ,
+              span [class "panel_small" ]
+              [ text "if you are a Chief physician in a hospital making 16.000 EUR a month" ]
+            ]
+            ,
+            p [ class "prof_panel -student" ]
+            [
+              span [ class "panel_title" ]
+              [ text "Student" ]
+              ,
+              span [class "panel_number" ]
+              [ text "176€" ]
+              ,
+              span [class "panel_small" ]
+              [ text "if you are a Chief physician in a hospital making 16.000 EUR a month" ]
             ]
           ]
         ]

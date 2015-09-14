@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="184px" height="500px" viewBox="0 0 184 500" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.3 (12072) - http://www.bohemiancoding.com/sketch -->
+    <title>salesman</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="salesman" sketch:type="MSLayerGroup" fill="#3E5D9C">
+            <path d="M182.949,390.5 L141.05,123.2 C145.75,121.9 149.651,118.3 151.05,113.5 L178.75,18.2 C180.05,13.9 179.15,9.2 176.449,5.7 C173.75,2.099 169.55,0 165.05,0 L18.949,0 C14.449,0 10.25,2.1 7.55,5.7 C4.85,9.3 3.949,13.9 5.25,18.2 L32.949,113.5 C34.349,118.4 38.25,122 42.949,123.2 L1.05,390.5 C0.449,394.601 1.55,398.601 4.151,401.801 L81.05,494.801 C83.75,498.101 87.75,500 92.05,500 C96.25,500 100.35,498.101 103.05,494.801 L179.949,401.801 C182.449,398.7 183.55,394.601 182.949,390.5 L182.949,390.5 Z M146.05,28.5 L126.651,95.2 L124.45,95.2 L59.551,95.2 L57.351,95.2 L37.951,28.5 L146.05,28.5 L146.05,28.5 Z M91.949,463.301 L30.15,388.601 L71.65,123.8 L112.15,123.8 L153.65,388.601 L91.949,463.301 L91.949,463.301 Z" id="Shape" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>
