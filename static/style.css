@@ -125,6 +125,27 @@ html {
   margin-left: 2%;
   margin-right: 2%;
   height: 40vh;
+  background-repeat: no-repeat;
+  background-size: 20%;
+  background-position: center 36px;
+}
+
+.main_item {
+  background-repeat: no-repeat;
+  background-size: 5%;
+  background-position: 36px;
+}
+
+.-comparability {
+  background-image: url('images/comparability.svg');
+}
+
+.-exploitation {
+  background-image: url('images/exploitation.svg');
+}
+
+.-money {
+  background-image: url('images/money.svg');
 }
 
 p.title {
@@ -141,7 +162,7 @@ p.prof_panel {
   display: block;
   background-repeat: no-repeat;
   background-size: 90% 30%;
-  background-position: top left;
+  background-position: top center;
   text-align: center;
   display:flex;
   flex-direction: row;
@@ -159,30 +180,32 @@ p.prof_panel span {
 }
 
 p.prof_panel .panel_title {
-  padding-top: 116px;
-  font-size: 12px;
+  padding-top: 109px;
+  font-size: 10.5px;
   height: 32px;
+  letter-spacing: 1px;
 }
 
 p.prof_panel .panel_number {
   font-size: 36px;
-  height: 56px;
+  height: 50px;
 }
 
 p.prof_panel .panel_small {
   font-size: 12px;
+  height: 90px;
 }
 
 p.prof_panel.-football {
   background-image: url('images/football.svg');
   width: 100% !important;
   background-size: 90px;
-  background-position: 305px 45px;
+  background-position: 373px 45px;
   height: 190px;
 }
 
 p.prof_panel.-football .panel_title {
-  width: 30%;
+  width: 35%;
   padding-top: 72px;
   font-size: 14px;
   text-align: right;
@@ -191,54 +214,64 @@ p.prof_panel.-football .panel_title {
 p.prof_panel.-football .big_number {
   padding-top: 0;
   font-size: 120px;
-  width: 40%;
+  width: 30%;
 }
 
 p.prof_panel.-football .panel_medium {
   font-size: 24px;
-  width: 30%;
+  width: 35%;
   padding-top: 20px;
   text-align: left;
 }
 
 p.prof_panel.-doctor {
   background-image: url('images/doctor.svg');
+  animation: introduce_text 5s;
 }
 
 p.prof_panel.-manager {
   background-image: url('images/manager.svg');
+  animation: introduce_text 6s;
 }
 
 p.prof_panel.-pilot {
   background-image: url('images/pilot.svg');
+  animation: introduce_text 7s;
 }
 
 p.prof_panel.-judge {
   background-image: url('images/judge.svg');
+  animation: introduce_text 8s;
 }
 
 p.prof_panel.-teacher {
   background-image: url('images/teacher.svg');
+  animation: introduce_text 9s;
 }
 
 p.prof_panel.-mechanic {
   background-image: url('images/mechanic.svg');
+  animation: introduce_text 10s;
 }
 
 p.prof_panel.-salesman {
   background-image: url('images/salesman.svg');
+  animation: introduce_text 11s;
 }
 
 p.prof_panel.-nurse {
   background-image: url('images/nurse.svg');
+  animation: introduce_text 12s;
 }
 
 p.prof_panel.-hairdresser {
   background-image: url('images/hairdresser.svg');
+  animation: introduce_text 13s;
 }
 
 p.prof_panel.-student {
   background-image: url('images/student.svg');
+  animation: introduce_text 14s;
 }
 
 p.panel {
@@ -285,8 +318,29 @@ p.panel {
   letter-spacing: -5px;
 }
 
-.lead .big_number {
+.lead .big_number, .prof_panel .big_number {
   animation: introduce_text 5s;
+}
+
+.lead.-centered {
+  width: 80%;
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+.emph_number {
+  animation: introduce_text 5s;
+  font-size: 54px;
+}
+
+p.sources {
+  font-size: 11px;
+  width: 100%;
+  display: block;
+  padding-top: 64px;
+  padding-left: 30px;
+  color: #3E5D9C;
+  animation: introduce_text 20s;
 }
 
 .panel_title {
