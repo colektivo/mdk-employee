@@ -18,3 +18,9 @@ Then run electron on the current directory.
 electron .
 ```
 =======
+
+-- TODO
+-- view functions that:
+-- display hours if there's a value
+-- display minutes if there's a value
+-- move language to another module and return a string, not Html
