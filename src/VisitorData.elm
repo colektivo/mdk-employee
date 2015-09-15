@@ -20,15 +20,18 @@ import Json.Encode as Encode
 type alias WorkingTime = { years: Int, months: Int, days: Int, hours: Int, minutes: Int, seconds: Int, decimalTime: Float }
 type alias TimeSpent =  { hours: Maybe Int, minutes: Maybe Int, seconds: Maybe Int }
 type alias Report = { position: Int, timeSpent: TimeSpent, timeSpentInSeconds : Float }
-type alias VisitorData = { workingTime : WorkingTime, timeReport : List Report, isValid: Bool, isComplete: Bool }
+type alias VisitorData = { workingTime : WorkingTime, timeReport : List Report, isValid: Bool, isComplete: Bool, payment : Maybe (List Payment) }
+type alias Payment = { text: String, income: Float, payment : Float }
 
 decodeVisitorData: String -> Result String VisitorData
 decodeVisitorData =
-  Decode.decodeString <| Decode.object4 VisitorData
+  Decode.decodeString <| Decode.object5 VisitorData
     ( "workingTime" := decodeWorkingTime )
     ( "timeReport" := Decode.list decodeReport )
     ( "isValid" := Decode.bool )
     ( "isComplete" := Decode.bool )
+    ( Decode.maybe ("payment" := Decode.list decodePayment) )
+
 
 
 toValidVisitorData : Result String VisitorData -> VisitorData
@@ -37,6 +40,12 @@ toValidVisitorData result =
     Ok value -> value
     _ -> defaultCardData
 
+decodePayment : Decode.Decoder Payment
+decodePayment =
+  Decode.object3 Payment
+    ("text" := Decode.string )
+    ("income" := Decode.float )
+    ("payment" := Decode.float )
 
 decodeReport: Decode.Decoder Report
 decodeReport =
@@ -94,4 +103,17 @@ defaultCardData =
     , seconds = 13
     , minutes = 30
     }
+  , payment = Just [
+      { text =  "Philip Lahm"          , income =  830000  , payment = 18154.5 }
+     ,{ text =  "Chief physician"      , income =  16000   , payment = 350.0   }
+     ,{ text =  "Manager"              , income =  11100   , payment = 241.5   }
+     ,{ text =  "Pilot"                , income =  10300   , payment = 224.0   }
+     ,{ text =  "Judge"                , income =  6100    , payment = 133.0   }
+     ,{ text =  "School teacher"       , income =  4030    , payment = 87.5    }
+     ,{ text =  "Car mechanic"         , income =  2830    , payment = 59.5    }
+     ,{ text =  "Insurance salesman"   , income =  2576    , payment = 56.0    }
+     ,{ text =  "Nurse"                , income =  2064    , payment = 42.0    }
+     ,{ text =  "Hairdresser"          , income =  1288    , payment = 28.0    }
+     ,{ text =  "Student"              , income =  670     , payment = 14.0    }
+    ]
   }
