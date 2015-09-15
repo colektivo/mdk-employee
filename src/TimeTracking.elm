@@ -4,7 +4,7 @@ import Graphics.Element exposing (show)
 import Task             exposing (Task, andThen)
 import String
 import Keyboard
-import Time
+import Time             exposing (..)
 import SocketIO
 import Html             exposing (..)
 import Html.Attributes  exposing (..)
@@ -28,6 +28,7 @@ port responses = socket `andThen` SocketIO.on "completed" received.address
 type alias Model =
   {  visitorData: VisitorData,
     page: Int,
+    seconds: Int,
     language: String
   }
 
@@ -36,6 +37,7 @@ initialModel =
   {
     visitorData = defaultCardData,
     page = 0,
+    seconds = 0,
     language = ""
   }
 
@@ -49,6 +51,7 @@ type Action =   Next
           | Subpage Int
           | LeaveSubpage
           | NoOp
+          | UpdateClock Float
 
 -- UPDATE
 
@@ -57,10 +60,12 @@ update action log =
   case action of
     NoOp ->
       log
+    UpdateClock _ ->
+      { log | seconds <- log.seconds + 1 }
     Previous ->
-      { log | page <- log.page - 1 }
+      { log | page <- log.page - 1, seconds <- 0 }
     Next ->
-      { log | page <- log.page + 1 }
+      { log | page <- log.page + 1, seconds <- 0 }
     Start data ->
       { log | visitorData <- toValidVisitorData ( decodeVisitorData data ) , page <- 1 }
     Reset ->
@@ -71,6 +76,7 @@ update action log =
       { log | page <- 600 + subpage}
     LeaveSubpage ->
       { log | page <- 6}
+
 
 -- SIGNALS
 
@@ -112,9 +118,17 @@ allinputs : Signal Action
 allinputs =
   Signal.merge actions.signal cardAndKeyboardInputs
 
+clock: Signal Action
+clock =
+  Signal.map UpdateClock (every second)
+
+signalsWithClock : Signal Action
+signalsWithClock =
+  Signal.merge allinputs clock
+
 model: Signal Model
 model =
-  foldp update initialModel allinputs
+  foldp update initialModel signalsWithClock
 
 -- VIEW
 
@@ -177,6 +191,12 @@ intro address model =
         ]
 
       ]
+
+showClock: Address Action -> Model -> Html
+showClock address model =
+  div []
+    [text (toString (model.seconds) )]
+
 
 content: Address Action -> Model -> Html
 content address model =
@@ -602,6 +622,8 @@ content address model =
             ,
             p [ class "readable" ]
             [ phrase "thankyou_p2" model.language ]
+            ,
+            showClock address model
           ]
         ]
       ]
