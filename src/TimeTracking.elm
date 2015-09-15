@@ -25,7 +25,7 @@ port responses = socket `andThen` SocketIO.on "completed" received.address
 -- MODEL
 
 type alias Model =
-  {  visitorData: Result String VisitorData,
+  {  visitorData: VisitorData,
     page: Int,
     language: String
   }
@@ -33,7 +33,7 @@ type alias Model =
 initialModel : Model
 initialModel =
   {
-    visitorData = decodeVisitorData "",
+    visitorData = defaultCardData,
     page = 0,
     language = ""
   }
@@ -61,9 +61,9 @@ update action log =
     Next ->
       { log | page <- log.page + 1 }
     Start data ->
-      { log | visitorData <- decodeVisitorData data, page <- 1 }
+      { log | visitorData <- toValidVisitorData ( decodeVisitorData data ) , page <- 1 }
     Reset ->
-      { log | visitorData <- decodeVisitorData "", page <- 0 }
+      { log | visitorData <- defaultCardData , page <- 0 }
     Language language ->
       { log | language <- language, page <- 2}
     Subpage subpage ->
@@ -324,7 +324,7 @@ content address model =
             p [ class "lead" ]
             [
               span [ class "big_number" ]
-              [ text "1" ]
+              [ text (toString model.visitorData.workingTime.hours) ]
               ,
               -- change phrase depending on singular or plural:
               phrase "duration_hours" model.language
@@ -334,7 +334,7 @@ content address model =
             p [ class "lead"]
             [
               span [ class "big_number"]
-              [ text "35" ]
+              [ text (toString model.visitorData.workingTime.minutes) ]
               ,
               -- change phrase depending on singular or plural:
               phrase "duration_minutes" model.language
