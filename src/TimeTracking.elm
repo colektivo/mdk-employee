@@ -16,9 +16,11 @@ import Translations     exposing (..)
 socket : Task x SocketIO.Socket
 socket = SocketIO.io "http://localhost:8001" SocketIO.defaultOptions
 
+-- configuration port the socket server will send a message to start with the current configuration
 port initial : Task x ()
-port initial = socket `andThen` SocketIO.emit "" "Hello I am a browser using websockets"
+port initial = socket `andThen` SocketIO.on "init" init.address
 
+-- messages port where we will receive the visitorData
 port responses : Task x ()
 port responses = socket `andThen` SocketIO.on "completed" received.address
 
@@ -108,6 +110,10 @@ movement =
 actions: Mailbox Action
 actions =
   mailbox Reset
+
+init : Signal.Mailbox String
+init =
+  Signal.mailbox ""
 
 received : Signal.Mailbox String
 received =
