@@ -24,7 +24,6 @@ port initial = socket `andThen` SocketIO.on "init" init.address
 port responses : Task x ()
 port responses = socket `andThen` SocketIO.on "completed" received.address
 
-
 -- MODEL
 
 type alias Model =
@@ -42,7 +41,8 @@ initialModel =
     visitorData = defaultCardData,
     timeoutInSeconds = 5,
     timeoutOnPage = 7,
-    page = 0,
+-- page -1 server not initiated
+    page = -1,
     seconds = 0,
     language = ""
   }
@@ -50,6 +50,7 @@ initialModel =
 -- ACTIONS
 
 type Action =   Next
+          | Init String
           | Previous
           | Reset
           | Start String
@@ -64,6 +65,8 @@ type Action =   Next
 update : Action -> Model -> Model
 update action log =
   case action of
+    Init config ->
+      update Next log
     NoOp ->
       log
     UpdateClock _ ->
@@ -111,9 +114,13 @@ actions: Mailbox Action
 actions =
   mailbox Reset
 
-init : Signal.Mailbox String
+init: Signal.Mailbox String
 init =
   Signal.mailbox ""
+
+initiated: Signal Action
+initiated =
+  Signal.map Init init.signal
 
 received : Signal.Mailbox String
 received =
@@ -125,7 +132,7 @@ cardinput =
 
 cardAndKeyboardInputs : Signal Action
 cardAndKeyboardInputs =
-  Signal.merge cardinput movement
+  Signal.mergeMany [initiated, cardinput, movement]
 
 allinputs : Signal Action
 allinputs =
@@ -214,6 +221,9 @@ showClock address model =
 content: Address Action -> Model -> Html
 content address model =
   case model.page of
+    (-1) ->
+      div []
+      [ text "server not started" ]
     0 ->
       intro address model
     1 ->
