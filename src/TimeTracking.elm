@@ -175,10 +175,7 @@ intro address model =
           p [ class "content" ]
           [ phrase "place_chip" "en" ]
         ]
-        -- delete this button after RFID integration:
-        ,
-        div []
-          [ text (toString model.visitorData) ]
+
       ]
 
 content: Address Action -> Model -> Html
@@ -189,9 +186,6 @@ content address model =
     1 ->
       div [ class "back -second" ]
       [
-
-        div [] [ text (toString model.visitorData) ]
-        ,
         languageSelector address model "de"
         ,
         languageSelector address model "en"
