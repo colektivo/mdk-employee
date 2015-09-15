@@ -30,6 +30,14 @@ decodeVisitorData =
     ( "isValid" := Decode.bool )
     ( "isComplete" := Decode.bool )
 
+
+toValidVisitorData : Result String VisitorData -> VisitorData
+toValidVisitorData result =
+  case result of
+    Ok value -> value
+    _ -> defaultCardData
+
+
 decodeReport: Decode.Decoder Report
 decodeReport =
   Decode.object3 Report
@@ -65,3 +73,25 @@ decodeWorkingTime =
     ( "minutes" := Decode.int )
     ( "seconds" := Decode.int )
     ( "decimalTime" := Decode.float )
+
+defaultCardData : VisitorData
+defaultCardData =
+  { isComplete = True
+  , isValid = True
+  , timeReport =
+    [ { position = 1, timeSpent = { hours = Just 1, minutes = Nothing, seconds = Nothing }, timeSpentInSeconds = 3600 }
+    , { position = 2, timeSpent = { hours = Nothing, minutes = Just 30, seconds = Just 10 }, timeSpentInSeconds = 1810 }
+    , { position = 3, timeSpent = { hours = Nothing, minutes = Just 30, seconds = Just 1 }, timeSpentInSeconds = 1801 }
+    , { position = 4, timeSpent = { hours = Just 1, minutes = Nothing, seconds = Just 1 }, timeSpentInSeconds = 3601 }
+    , { position = 5, timeSpent = { hours = Nothing, minutes = Just 30, seconds = Just 1 }, timeSpentInSeconds = 1801 }
+    ]
+  , workingTime =
+    { years = 0
+    , months = 0
+    , days = 0
+    , decimalTime = 3.5
+    , hours = 3
+    , seconds = 13
+    , minutes = 30
+    }
+  }
