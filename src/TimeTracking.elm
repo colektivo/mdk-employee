@@ -152,6 +152,10 @@ model =
 
 -- VIEW
 
+monetize: Float -> Html
+monetize number =
+  text ((toString number) ++ "€")
+
 previous: Address Action -> Model -> Html
 previous address model =
   li [ onClick address Previous ] [ text "Prev" ]
@@ -223,7 +227,13 @@ content address model =
   case model.page of
     (-1) ->
       div []
-      [ text "server not started" ]
+      [
+        div[]
+          [text "server not started" ]
+        ,
+        div[]
+          [text (toString model) ]
+      ]
     0 ->
       intro address model
     1 ->
@@ -389,7 +399,7 @@ content address model =
               [ phrase "football_t" model.language ]
               ,
               span [class "big_number" ]
-              [ text "9143€" ]
+              [ monetize 9143 ]
               ,
               span [class "panel_medium" ]
               [ phrase "football_p" model.language  ]
@@ -401,7 +411,7 @@ content address model =
               [ phrase "doctor_t" model.language ]
               ,
               span [class "panel_number" ]
-              [ text "176€" ]
+              [ monetize 176 ]
               ,
               span [class "panel_small" ]
               [ phrase "doctor_p" model.language ]
@@ -413,7 +423,7 @@ content address model =
               [ phrase "manager_t" model.language ]
               ,
               span [class "panel_number" ]
-              [ text "155€" ]
+              [ monetize 155 ]
               ,
               span [class "panel_small" ]
               [ phrase "manager_p" model.language ]
@@ -425,7 +435,7 @@ content address model =
               [ phrase "pilot_t" model.language ]
               ,
               span [class "panel_number" ]
-              [ text "123€" ]
+              [ monetize 123 ]
               ,
               span [class "panel_small" ]
               [ phrase "pilot_p" model.language ]
@@ -437,7 +447,7 @@ content address model =
               [ phrase "judge_t" model.language ]
               ,
               span [class "panel_number" ]
-              [ text "120€" ]
+              [ monetize 120 ]
               ,
               span [class "panel_small" ]
               [ phrase "judge_p" model.language ]
@@ -449,7 +459,7 @@ content address model =
               [ phrase "teacher_t" model.language ]
               ,
               span [class "panel_number" ]
-              [ text "111€" ]
+              [ monetize 111 ]
               ,
               span [class "panel_small" ]
               [ phrase "teacher_p" model.language ]
@@ -461,7 +471,7 @@ content address model =
               [ phrase "mechanic_t" model.language ]
               ,
               span [class "panel_number" ]
-              [ text "79€" ]
+              [ monetize 79 ]
               ,
               span [class "panel_small" ]
               [ phrase "mechanic_p" model.language ]
@@ -473,7 +483,7 @@ content address model =
               [ phrase "salesman_t" model.language ]
               ,
               span [class "panel_number" ]
-              [ text "73€" ]
+              [ monetize 73 ]
               ,
               span [class "panel_small" ]
               [ phrase "salesman_p" model.language ]
@@ -485,7 +495,7 @@ content address model =
               [ phrase "nurse_t" model.language ]
               ,
               span [class "panel_number" ]
-              [ text "63€" ]
+              [ monetize 63 ]
               ,
               span [class "panel_small" ]
               [ phrase "nurse_p" model.language ]
@@ -497,7 +507,7 @@ content address model =
               [ phrase "hairdresser_t" model.language ]
               ,
               span [class "panel_number" ]
-              [ text "22€" ]
+              [ monetize 22 ]
               ,
               span [class "panel_small" ]
               [ phrase "hairdresser_p" model.language ]
@@ -509,7 +519,7 @@ content address model =
               [ phrase "student_t" model.language ]
               ,
               span [class "panel_number" ]
-              [ text "5€" ]
+              [ monetize 5 ]
               ,
               span [class "panel_small" ]
               [ phrase "student_p" model.language ]
