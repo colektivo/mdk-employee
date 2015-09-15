@@ -20,8 +20,10 @@ import Json.Encode as Encode
 type alias WorkingTime = { years: Int, months: Int, days: Int, hours: Int, minutes: Int, seconds: Int, decimalTime: Float }
 type alias TimeSpent =  { hours: Maybe Int, minutes: Maybe Int, seconds: Maybe Int }
 type alias Report = { position: Int, timeSpent: TimeSpent, timeSpentInSeconds : Float }
-type alias VisitorData = { workingTime : WorkingTime, timeReport : List Report, isValid: Bool, isComplete: Bool, payment : Maybe (List Payment) }
+type alias VisitorData = { workingTime : WorkingTime, timeReport : List Report, isValid: Bool, isComplete: Bool, salaries : Maybe (List Payment) }
 type alias Payment = { text: String, income: Float, payment : Float }
+
+
 
 decodeVisitorData: String -> Result String VisitorData
 decodeVisitorData =
@@ -30,7 +32,7 @@ decodeVisitorData =
     ( "timeReport" := Decode.list decodeReport )
     ( "isValid" := Decode.bool )
     ( "isComplete" := Decode.bool )
-    ( Decode.maybe ("payment" := Decode.list decodePayment) )
+    ( Decode.maybe ("salaries" := Decode.list decodePayment) )
 
 
 
@@ -103,7 +105,7 @@ defaultCardData =
     , seconds = 13
     , minutes = 30
     }
-  , payment = Just [
+  , salaries = Just [
       { text =  "Philip Lahm"          , income =  830000  , payment = 18154.5 }
      ,{ text =  "Chief physician"      , income =  16000   , payment = 350.0   }
      ,{ text =  "Manager"              , income =  11100   , payment = 241.5   }

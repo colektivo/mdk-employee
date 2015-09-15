@@ -152,6 +152,10 @@ model =
 
 -- VIEW
 
+visitorPayment : String -> List Payment -> Maybe Payment
+visitorPayment text salaries =
+  List.head (List.filter (\element -> element.text == text) salaries)
+
 monetize: Float -> Html
 monetize number =
   text ((toString number) ++ "€")
