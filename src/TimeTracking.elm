@@ -28,6 +28,8 @@ port responses = socket `andThen` SocketIO.on "completed" received.address
 type alias Model =
   {  visitorData: VisitorData,
     page: Int,
+    timeoutOnPage: Int,
+    timeoutInSeconds: Int,
     seconds: Int,
     language: String
   }
@@ -36,6 +38,8 @@ initialModel : Model
 initialModel =
   {
     visitorData = defaultCardData,
+    timeoutInSeconds = 5,
+    timeoutOnPage = 7,
     page = 0,
     seconds = 0,
     language = ""
@@ -61,7 +65,10 @@ update action log =
     NoOp ->
       log
     UpdateClock _ ->
-      { log | seconds <- log.seconds + 1 }
+      let timeout = log.page == log.timeoutOnPage && log.seconds > log.timeoutInSeconds
+      in
+        if timeout then update Reset log
+           else { log | seconds <- log.seconds + 1 }
     Previous ->
       { log | page <- log.page - 1, seconds <- 0 }
     Next ->
@@ -69,7 +76,7 @@ update action log =
     Start data ->
       { log | visitorData <- toValidVisitorData ( decodeVisitorData data ) , page <- 1 }
     Reset ->
-      { log | visitorData <- defaultCardData , page <- 0 }
+      { log | visitorData <- defaultCardData , page <- 0, seconds <- 0 }
     Language language ->
       { log | language <- language, page <- 2}
     Subpage subpage ->
