@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # TimeTracking for Museum des Kapitalismus in Elm using Electron -
 
 Run Elm in [Electron](http://electron.atom.io/)!
@@ -17,7 +16,6 @@ Then run electron on the current directory.
 ```bash
 electron .
 ```
-=======
 
 -- TODO
 -- view functions that:
