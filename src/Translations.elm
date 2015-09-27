@@ -125,5 +125,15 @@ translation key language =
         "student_t"             -> "student"
         "student_p"             -> "if you are a student receiving 670 EUR BAföG"
         "sources"               -> "Sources: http://www.gehaltsreporter.de https://www.nettolohn.de http://www.lohnspiegel.de"
+        -- configuration keys
+        "start the server"      -> "Please start the server (sudo node boss.js)"
+        "configure devices and positions" -> "Now we will configure devices and positions..."
+        "validate devices and positions" -> "Now we will validate repeating what we did before"
+        "restart configuration"          -> "restart configuration"
+        "start"                  -> "start tracking"
+        "start tracking"          -> "You did it well. Do you wanna start?"
+        "save configuration"          -> "save configuration"
+        "review config"          -> "Do you wanna review the configuration?"
+        "configure"              -> "back to configuration"
         _                       -> ("Unknown. Key name: " ++ key)
     _ -> "unkown language"

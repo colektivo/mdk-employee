@@ -12,13 +12,39 @@ import Html.Events      exposing (onClick)
 import Signal           exposing (..)
 import VisitorData      exposing (..)
 import Translations     exposing (..)
+import BossOrder        exposing (..)
+import Json.Encode      as Encode
+import Json.Decode as Decode exposing ((:=))
+import Json.Encode as Encode
+import Debug
+
+-- BOSS
 
 socket : Task x SocketIO.Socket
 socket = SocketIO.io "http://localhost:8001" SocketIO.defaultOptions
 
--- configuration port the socket server will send a message to start with the current configuration
-port initial : Task x ()
-port initial = socket `andThen` SocketIO.on "init" init.address
+--
+-- Ports from BossOrder used to communicate to the Boss
+--
+
+port followBoss : Task x ()
+port followBoss = socket `andThen` SocketIO.on "boss says" (Debug.log "bossSays.address:" bossSays.address)
+
+port talkToBoss : Signal (Task x ())
+port talkToBoss = employeeMessages
+
+employeeMessages : Signal (Task x ())
+employeeMessages =
+  let
+    send message = socket `andThen` SocketIO.emit (Debug.log "message" message.command) (configToJson (toValidConfig message.config))
+    bossMessagesFromView = Signal.map actionToBoss signalsWithClock
+    bossMessages = Signal.merge outgoingMessages.signal bossMessagesFromView
+  in
+    Signal.map send bossMessages
+
+outgoingMessages: Signal.Mailbox BossMessage
+outgoingMessages =
+  Signal.mailbox startMessage
 
 -- messages port where we will receive the visitorData
 port responses : Task x ()
@@ -27,59 +53,228 @@ port responses = socket `andThen` SocketIO.on "completed" received.address
 -- MODEL
 
 type alias Model =
-  {  visitorData: VisitorData,
-    page: Int,
-    timeoutOnPage: Int,
-    timeoutInSeconds: Int,
-    seconds: Int,
-    language: String
+  { visitorData: VisitorData
+  , commands: List String
+  , messages: List Message
+  , config: Config
+  , currentDeviceCheck: DeviceData
+  , currentDevicePosition: Int
+  , validatedDevices: List Device
+  , confirmedDevices: List (Device, Bool)
+  , page: Int
+  , timeoutOnPage: Int
+  , timeoutInSeconds: Int
+  , seconds: Int
+  , language: String
+  , readyToStart: Bool
+  , configurationSaved: Bool
   }
 
 initialModel : Model
 initialModel =
-  {
-    visitorData = defaultCardData,
-    timeoutInSeconds = 5,
-    timeoutOnPage = 7,
+  { visitorData = defaultCardData
+  , messages = []
+  , commands = []
+  , config = defaultConfig
+  , currentDeviceCheck = defaultDeviceData
+  , currentDevicePosition = 1
+  , validatedDevices = []
+  , confirmedDevices = []
+  , timeoutInSeconds = 600
+  , timeoutOnPage = 7
 -- page -1 server not initiated
-    page = -1,
-    seconds = 0,
-    language = ""
+  , page = -4
+  , seconds = 0
+  , language = "en"
+  , readyToStart = False
+  , configurationSaved = False
   }
 
 -- ACTIONS
 
+startMessage : BossMessage
+startMessage =
+  { command = "init"
+  , config = Nothing
+  }
+
+startTracking : BossMessage
+startTracking =
+  { command = "start"
+  , config = Nothing
+  }
+
+restartMessage : BossMessage
+restartMessage =
+  { command = "restart"
+  , config = Nothing
+  }
+
+saveConfiguration model =
+  {
+    command = "save config"
+  , config = Just model.config
+  }
+
 type Action =   Next
-          | Init String
-          | Previous
-          | Reset
-          | Start String
-          | Language String
-          | Subpage Int
-          | LeaveSubpage
-          | NoOp
-          | UpdateClock Float
+            | RestartConfiguration
+            | CheckDevices Model
+            | Ready (Maybe Config)
+            | Start
+            | Check (Maybe DeviceData)
+            | Configure (Maybe Config)
+            | Say BossMessage
+            | Connect
+            | Init String
+            | Previous
+            | Reset
+            | Card String
+            | Language String
+            | Subpage Int
+            | LeaveSubpage
+            | NoOp
+            | UpdateClock Float
 
 -- UPDATE
+
+handleTimeout : Model -> Model
+handleTimeout log =
+
+    case log.page of
+      -- configuration page
+      (-4) ->
+        let
+          timeToStart =
+            log.page == -4 && log.seconds > 5
+        in
+          if timeToStart then
+            log
+          else { log | seconds <- log.seconds + 1 }
+      7 ->
+        if log.seconds > log.timeoutInSeconds then update Reset log else { log | seconds <- log.seconds + 1 }
+      _ ->
+        { log | seconds <- log.seconds + 1 }
+
+
+setDevicesToValidate config =
+  List.map (\dev -> { dev | device <- ""}) config.devices
+
+setDevicesToConfirm validatedDevices =
+  List.map (\dev -> (dev, False)) validatedDevices
+
+
+setReceivedDevice: Model -> DeviceData -> List Device
+setReceivedDevice model readerData =
+  let
+    -- check that does not exist
+    currentReceivedDevices = List.map (\received -> received.device) model.validatedDevices
+    alreadyExisting = List.member readerData.devicePath currentReceivedDevices
+    --
+    emptyDevices = List.filter (\received -> received.device == "") model.validatedDevices
+    alreadyReceived = List.filter (\received -> received.device /= "") model.validatedDevices
+    currentPosition = (List.length alreadyReceived) + 1
+    nextToReceive = List.take 1 emptyDevices
+    notYetReceived = List.drop 1 emptyDevices
+    newDevice = List.map (\emptyDevice -> { emptyDevice | device <- readerData.devicePath, position <- currentPosition } ) nextToReceive
+  in
+    if alreadyExisting
+      then
+        model.validatedDevices
+      else
+        List.concat [alreadyReceived, newDevice, notYetReceived]
+
+isAllConfigured validatedDevices =
+  List.all (\device -> device.device /= "") validatedDevices
+
+deviceToConfirm confirmedDevices =
+  let
+    sortedDevices = List.sortBy (\(d,b) -> d.position) confirmedDevices
+  in
+    List.take 1 ( List.filter (\(_, confirmed)-> confirmed == False ) sortedDevices)
+
+allConfirmed confirmedDevices =
+  List.all (\(device, confirmed) -> confirmed ) confirmedDevices
+
+isConfirmed model readerData =
+  List.all (\(device, confirmed) -> (Debug.log "checking device" device.device) == readerData.devicePath ) (deviceToConfirm model.confirmedDevices)
+
+confirm (device, confirmed) devicePath =
+  if device.device == devicePath
+    then
+      (device, True)
+    else
+      (device, confirmed)
+
+
+confirmedDevicesWith model readerData =
+  List.map (\(device, confirmed) -> confirm (device, confirmed) readerData.devicePath ) model.confirmedDevices
+
+updateConfig confirmedDevices =
+  { devices = (List.map (\(d,_)-> d ) confirmedDevices)
+    , deviceData = Nothing
+    , message = Nothing
+  }
 
 update : Action -> Model -> Model
 update action log =
   case action of
-    Init config ->
-      update Next log
+    CheckDevices model ->
+      Debug.log "checkDevices:" log
+    Check readerData ->
+      case log.page of
+        -- Device position discovery page
+        (-3) ->
+          let
+            validDeviceData= toVaildDeviceData readerData
+            devicePath = validDeviceData.devicePath
+            currentValidatedDevices = setReceivedDevice log (toVaildDeviceData readerData)
+          in
+            { log | currentDevicePosition <- log.currentDevicePosition + 1
+                  , currentDeviceCheck <- (Debug.log "reader" (toVaildDeviceData readerData))
+                  , validatedDevices <- currentValidatedDevices
+                  , confirmedDevices <- setDevicesToConfirm currentValidatedDevices
+                  , page <- if isAllConfigured (setReceivedDevice log (toVaildDeviceData readerData)) then -2 else log.page
+            }
+        -- Device position validation page
+        (-2) ->
+          let
+            isCurrentDeviceConfirmed = isConfirmed log (toVaildDeviceData readerData)
+            currentConfirmedDevices = confirmedDevicesWith log (toVaildDeviceData readerData)
+            isComplete = allConfirmed currentConfirmedDevices
+          in
+            { log | page <- if isCurrentDeviceConfirmed
+                            then
+                              -2
+                            else
+                              -3
+                  , confirmedDevices <- if isCurrentDeviceConfirmed then currentConfirmedDevices else setDevicesToConfirm log.validatedDevices
+                  , validatedDevices <- if isCurrentDeviceConfirmed then log.validatedDevices else setDevicesToValidate log.config
+                  , config <- if isComplete then updateConfig currentConfirmedDevices else log.config
+                  , readyToStart <-isComplete
+            }
+        otherwise ->
+          log
+    Ready newConfig ->
+      { log | page <- -1, seconds <- 0, config <- (Debug.log "config:" toValidConfig newConfig)  }
+    Say message ->
+      log
     NoOp ->
       log
+    Configure config ->
+      { log | config <- (toValidConfig config)
+            , validatedDevices <- setDevicesToValidate (toValidConfig config)
+            , page <- -3
+            , seconds <- 0 }
     UpdateClock _ ->
-      let timeout = log.page == log.timeoutOnPage && log.seconds > log.timeoutInSeconds
-      in
-        if timeout then update Reset log
-           else { log | seconds <- log.seconds + 1 }
+      handleTimeout log
     Previous ->
       { log | page <- log.page - 1, seconds <- 0 }
     Next ->
       { log | page <- log.page + 1, seconds <- 0 }
-    Start data ->
+    Card data ->
       { log | visitorData <- toValidVisitorData ( decodeVisitorData data ) , page <- 1 }
+    Start ->
+      { log | visitorData <- defaultCardData , page <- 0, seconds <- 0 }
     Reset ->
       { log | visitorData <- defaultCardData , page <- 0, seconds <- 0 }
     Language language ->
@@ -88,7 +283,8 @@ update action log =
       { log | page <- 600 + subpage}
     LeaveSubpage ->
       { log | page <- 6}
-
+    _ ->
+      log
 
 -- SIGNALS
 
@@ -106,21 +302,55 @@ directionToAction direction =
     _ ->
       NoOp
 
-movement: Signal Action
-movement =
-  Signal.map directionToAction direction
-
 actions: Mailbox Action
 actions =
   mailbox Reset
 
-init: Signal.Mailbox String
-init =
-  Signal.mailbox ""
+commandToAction : BossMessage -> Action
+commandToAction bossMessage =
+  let command = (Debug.log "bossMessage.command:" bossMessage.command)
+  in
+    case command of
+      "configure" ->
+        Configure (Debug.log "config" bossMessage.config)
+      "ready to start" ->
+        Ready bossMessage.config
+      "check" ->
+        let
+          config = toValidConfig bossMessage.config
+          deviceData = config.deviceData
+        in
+          Check (Debug.log "readerData" deviceData)
+      _ ->
+        NoOp
 
-initiated: Signal Action
-initiated =
-  Signal.map Init init.signal
+actionToBoss : Action -> BossMessage
+actionToBoss action  =
+  case action of
+    Say message ->
+      Debug.log "actionToBoss:" message
+    CheckDevices model ->
+      Debug.log "check devices:" { command = (Debug.log "start:" "start")
+        , config = Just model.config
+      }
+
+    _ ->
+      defaultMessage
+
+
+outMessages : Signal BossMessage
+outMessages =
+  let
+    isCommand action =
+      case action of
+        Say _ ->
+          True
+        _     ->
+          False
+    onlyCommands = Signal.filter isCommand (NoOp) signalsWithClock
+  in
+    Signal.map actionToBoss onlyCommands
+
 
 received : Signal.Mailbox String
 received =
@@ -128,33 +358,37 @@ received =
 
 cardinput : Signal Action
 cardinput =
-  Signal.map Start received.signal
-
-cardAndKeyboardInputs : Signal Action
-cardAndKeyboardInputs =
-  Signal.mergeMany [initiated, cardinput, movement]
-
-allinputs : Signal Action
-allinputs =
-  Signal.merge actions.signal cardAndKeyboardInputs
-
-clock: Signal Action
-clock =
-  Signal.map UpdateClock (every second)
+  Signal.map Card received.signal
 
 signalsWithClock : Signal Action
 signalsWithClock =
-  Signal.merge allinputs clock
+  let
+    movement = Signal.map directionToAction direction
+    cardAndKeyboardInputs = Signal.merge cardinput movement
+    allinputs = Signal.merge actions.signal cardAndKeyboardInputs
+    boss = Signal.map commandToAction incomingMessages
+    allInputsWithBoss = Signal.merge boss allinputs
+    clock = Signal.map UpdateClock (every second)
+  in
+    Signal.merge allInputsWithBoss clock
 
 model: Signal Model
 model =
   foldp update initialModel signalsWithClock
 
+--
+--
 -- VIEW
+--
+-- monetize (paymentEntry "Nurse" model.salaries)
 
-visitorPayment : String -> List Payment -> Maybe Payment
-visitorPayment text salaries =
+paymentEntry : String -> List Payment -> Maybe Payment
+paymentEntry text salaries =
   List.head (List.filter (\element -> element.text == text) salaries)
+
+paymentAmount : Payment -> Html
+paymentAmount comparison =
+  monetize (comparison.payment)
 
 monetize: Float -> Html
 monetize number =
@@ -184,22 +418,58 @@ prevButton address model =
           [ phrase "previous" model.language ]
         ]
 
-languageSelector: Address Action -> Model -> String -> Html
-languageSelector address model language =
+restartButton: Address Action -> Model -> Html
+restartButton address model =
+        button [ onClick address (Say restartMessage), class "overlay previous"]
+        [
+          p []
+          [ phrase "restart configuration" model.language ]
+        ]
+
+
+saveConfigButton: Address Action -> Model -> Html
+saveConfigButton address model =
+        if model.readyToStart then
+          button [ onClick address (Say (saveConfiguration model)), class "overlay next"]
+          [
+            p []
+            [ phrase "save configuration" model.language ]
+          ]
+        else
+          p []
+            [ text "..." ]
+
+
+twoButtonSelector : Address Action -> Model -> String -> String -> Action -> String -> Html
+twoButtonSelector address model title actionText action language =
           div [ class "main_item -in_two" ]
           [
             div [ class "content" ]
             [
               p [ class "title" ]
-              [ phrase "welcome" language ]
+              [ phrase title language ]
               ,
-              button [ onClick address (Language language), class "main_button" ]
+              button [ onClick address action , class "main_button" ]
               [
                 p []
-                [ phrase "language" language ]
+                [ phrase actionText language ]
               ]
             ]
           ]
+
+
+languageSelector: Address Action -> Model -> String -> Html
+languageSelector address model language =
+          twoButtonSelector address model "welcome" "language" (Language language) language
+
+startOrConfigure: Address Action -> Model -> Html
+startOrConfigure address model =
+      div [ class "back -second" ]
+      [
+        twoButtonSelector address model "review config" "configure" (Configure Nothing) "en"
+        ,
+        twoButtonSelector address model "start tracking" "start" (Say startTracking) "en"
+      ]
 
 
 intro: Address Action -> Model -> Html
@@ -217,7 +487,6 @@ intro address model =
           p [ class "content" ]
           [ phrase "place_chip" "en" ]
         ]
-
       ]
 
 showClock: Address Action -> Model -> Html
@@ -225,19 +494,110 @@ showClock address model =
   div []
     [text (toString (model.seconds) )]
 
+listDevices : List Device -> Html
+listDevices devices =
+  let
+    devicesWithIndex = List.indexedMap (,) devices
+    nonZeroPositions (index, device) =
+      if device.position == 0 then (index + 1, device.device)
+        else (device.position, device.device)
+    sortedDevicePositions =
+      List.sort (List.map nonZeroPositions devicesWithIndex)
+  in
+    ul []
+      (List.map deviceEntry sortedDevicePositions)
+
+deviceEntry: (Int,String) -> Html
+deviceEntry position =
+  li []
+    [ text (toString position) ]
+
+
+container : List Html -> Html
+container html =
+  div [ class "main_item" ]
+    [
+      div [ class "content" ]
+        html
+    ]
+
+title : String -> Model -> Html
+title key model =
+  p [ class "title" ]
+    [ phrase key model.language ]
+
 
 content: Address Action -> Model -> Html
 content address model =
   case model.page of
-    (-1) ->
-      div []
+    (-4) ->
+      div [ class "back -second" ]
       [
-        div[]
-          [text "server not started" ]
-        ,
-        div[]
-          [text (toString model) ]
+        container [
+          title "start the server" model
+        ]
       ]
+    (-3) ->
+      div [ class "back -second" ]
+      [
+        container [
+          title "configure devices and positions" model
+          ,
+          div[]
+            [ text (toString model.validatedDevices)]
+          ,
+          div[]
+            [ text (toString model.confirmedDevices)]
+          ,
+
+--          div[]
+--            [ text (toString (isAllConfigured model))]
+--          ,
+
+
+--          div[]
+--            [ phrase "configuration" "en" ]
+--          ,
+--          div[]
+--            [text (toString model.config) ]
+--          ,
+--          div[]
+--            [text (toString model.currentDeviceCheck) ]
+--          ,
+--          div[]
+--            [text (toString model.validatedDevices) ]
+--          ,
+--          div[]
+--            [text (toString model.currentDevicePosition) ]
+--          ,
+          div[]
+            [ listDevices model.config.devices ]
+          ,
+          restartButton address model
+        ]
+      ]
+
+    (-2) ->
+      div [ class "back -second" ]
+        [
+          container [
+            title "validate devices and positions" model
+            ,
+            div[]
+              [ text (toString (deviceToConfirm model.confirmedDevices))]
+            ,
+            div[]
+              [ text (toString model.confirmedDevices)]
+            ,
+            div[]
+              [ listDevices model.config.devices ]
+            ]
+            ,
+            saveConfigButton address model
+        ]
+    -- ready to start
+    (-1) ->
+      startOrConfigure address model
     0 ->
       intro address model
     1 ->
@@ -251,15 +611,11 @@ content address model =
     2 ->
       div [ class "back -second" ]
       [
-        div [ class "main_item" ]
-        [
-          div [ class "content" ]
-          [
-            p [ class "title" ]
-            [ phrase "total_duration" model.language ]
-            ,
-            -- just show if more than 60 minutes:
-            p [ class "lead" ]
+        container [
+          title "total_duration" model
+          ,
+          -- just show if more than 60 minutes:
+          p [ class "lead" ]
             [
               span [ class "big_number" ]
               [ text (toString model.visitorData.workingTime.hours) ]
@@ -267,31 +623,26 @@ content address model =
               -- change phrase depending on singular or plural:
               phrase "duration_hours" model.language
             ]
-            ,
-            -- just show if minutes are not 0
-            p [ class "lead"]
+          ,
+          -- just show if minutes are not 0
+          p [ class "lead"]
             [
               span [ class "big_number"]
-              [ text (toString model.visitorData.workingTime.minutes) ]
+                [ text (toString model.visitorData.workingTime.minutes) ]
               ,
               -- change phrase depending on singular or plural:
               phrase "duration_minutes" model.language
             ]
-          ]
-        ]
-        ,
         -- if there are not data for next slide skip and go to slide 4
+          ]
+        ,
         nextButton address model
       ]
     3 ->
       div [ class "back -second" ]
       [
-        div [ class "main_item" ]
-        [
-          div [ class "content" ]
-          [
-            p [ class "title" ]
-            [ phrase "duration_by_area" model.language ]
+        container [
+            title "duration_by_area" model
             ,
             p [ class "panel -needs" ]
             [
@@ -352,7 +703,6 @@ content address model =
               span [class "panel_time"]
               [ phrase "duration_minutes" model.language]
             ]
-          ]
         ]
         ,
         prevButton address model
@@ -362,14 +712,10 @@ content address model =
     4 ->
       div [ class "back -second" ]
       [
-        div [ class "main_item" ]
-        [
-          div [ class "content" ]
+        container
           [
-            p [ class "title" ]
-            [ phrase "compared_visit" model.language ]
+            title "compared_visit" model
           ]
-        ]
         ,
         prevButton address model
         ,
@@ -378,160 +724,155 @@ content address model =
     5 ->
       div [ class "back -second" ]
       [
-        div [ class "main_item"]
-        [
-          div [ class "content" ]
+        container [
+          title "lost" model
+          ,
+          p [ class "lead -centered" ]
           [
-            p [ class "title" ]
-            [ phrase "lost" model.language ]
+            span []
+            [ phrase "lost_explanation_p1" model.language ]
             ,
-            p [ class "lead -centered" ]
-            [
-              span []
-              [ phrase "lost_explanation_p1" model.language ]
-              ,
-              span [ class "emph_number" ]
-              [ text "115" ]
-              ,
-              span []
-              [ phrase "lost_explanation_p2" model.language ]
-            ]
+            span [ class "emph_number" ]
+            [ text "115" ]
             ,
-            p [ class "prof_panel -football" ]
-            [
-              span [ class "panel_title" ]
-              [ phrase "football_t" model.language ]
-              ,
-              span [class "big_number" ]
-              [ monetize 9143 ]
-              ,
-              span [class "panel_medium" ]
-              [ phrase "football_p" model.language  ]
-            ]
-            ,
-            p [ class "prof_panel -doctor" ]
-            [
-              span [ class "panel_title" ]
-              [ phrase "doctor_t" model.language ]
-              ,
-              span [class "panel_number" ]
-              [ monetize 176 ]
-              ,
-              span [class "panel_small" ]
-              [ phrase "doctor_p" model.language ]
-            ]
-            ,
-            p [ class "prof_panel -manager" ]
-            [
-              span [ class "panel_title" ]
-              [ phrase "manager_t" model.language ]
-              ,
-              span [class "panel_number" ]
-              [ monetize 155 ]
-              ,
-              span [class "panel_small" ]
-              [ phrase "manager_p" model.language ]
-            ]
-            ,
-            p [ class "prof_panel -pilot" ]
-            [
-              span [ class "panel_title" ]
-              [ phrase "pilot_t" model.language ]
-              ,
-              span [class "panel_number" ]
-              [ monetize 123 ]
-              ,
-              span [class "panel_small" ]
-              [ phrase "pilot_p" model.language ]
-            ]
-            ,
-            p [ class "prof_panel -judge" ]
-            [
-              span [ class "panel_title" ]
-              [ phrase "judge_t" model.language ]
-              ,
-              span [class "panel_number" ]
-              [ monetize 120 ]
-              ,
-              span [class "panel_small" ]
-              [ phrase "judge_p" model.language ]
-            ]
-            ,
-            p [ class "prof_panel -teacher" ]
-            [
-              span [ class "panel_title" ]
-              [ phrase "teacher_t" model.language ]
-              ,
-              span [class "panel_number" ]
-              [ monetize 111 ]
-              ,
-              span [class "panel_small" ]
-              [ phrase "teacher_p" model.language ]
-            ]
-            ,
-            p [ class "prof_panel -mechanic" ]
-            [
-              span [ class "panel_title" ]
-              [ phrase "mechanic_t" model.language ]
-              ,
-              span [class "panel_number" ]
-              [ monetize 79 ]
-              ,
-              span [class "panel_small" ]
-              [ phrase "mechanic_p" model.language ]
-            ]
-            ,
-            p [ class "prof_panel -salesman" ]
-            [
-              span [ class "panel_title" ]
-              [ phrase "salesman_t" model.language ]
-              ,
-              span [class "panel_number" ]
-              [ monetize 73 ]
-              ,
-              span [class "panel_small" ]
-              [ phrase "salesman_p" model.language ]
-            ]
-            ,
-            p [ class "prof_panel -nurse" ]
-            [
-              span [ class "panel_title" ]
-              [ phrase "nurse_t" model.language ]
-              ,
-              span [class "panel_number" ]
-              [ monetize 63 ]
-              ,
-              span [class "panel_small" ]
-              [ phrase "nurse_p" model.language ]
-            ]
-            ,
-            p [ class "prof_panel -hairdresser" ]
-            [
-              span [ class "panel_title" ]
-              [ phrase "hairdresser_t" model.language ]
-              ,
-              span [class "panel_number" ]
-              [ monetize 22 ]
-              ,
-              span [class "panel_small" ]
-              [ phrase "hairdresser_p" model.language ]
-            ]
-            ,
-            p [ class "prof_panel -student" ]
-            [
-              span [ class "panel_title" ]
-              [ phrase "student_t" model.language ]
-              ,
-              span [class "panel_number" ]
-              [ monetize 5 ]
-              ,
-              span [class "panel_small" ]
-              [ phrase "student_p" model.language ]
-            ]
-            ,
-            p [ class "sources"]
-            [ phrase "sources" model.language ]
+            span []
+            [ phrase "lost_explanation_p2" model.language ]
           ]
+          ,
+          p [ class "prof_panel -football" ]
+          [
+            span [ class "panel_title" ]
+            [ phrase "football_t" model.language ]
+            ,
+            span [class "big_number" ]
+            [ monetize 9143 ]
+            ,
+            span [class "panel_medium" ]
+            [ phrase "football_p" model.language  ]
+          ]
+          ,
+          p [ class "prof_panel -doctor" ]
+          [
+            span [ class "panel_title" ]
+            [ phrase "doctor_t" model.language ]
+            ,
+            span [class "panel_number" ]
+            [ monetize 176 ]
+            ,
+            span [class "panel_small" ]
+            [ phrase "doctor_p" model.language ]
+          ]
+          ,
+          p [ class "prof_panel -manager" ]
+          [
+            span [ class "panel_title" ]
+            [ phrase "manager_t" model.language ]
+            ,
+            span [class "panel_number" ]
+            [ monetize 155 ]
+            ,
+            span [class "panel_small" ]
+            [ phrase "manager_p" model.language ]
+          ]
+          ,
+          p [ class "prof_panel -pilot" ]
+          [
+            span [ class "panel_title" ]
+            [ phrase "pilot_t" model.language ]
+            ,
+            span [class "panel_number" ]
+            [ monetize 123 ]
+            ,
+            span [class "panel_small" ]
+            [ phrase "pilot_p" model.language ]
+          ]
+          ,
+          p [ class "prof_panel -judge" ]
+          [
+            span [ class "panel_title" ]
+            [ phrase "judge_t" model.language ]
+            ,
+            span [class "panel_number" ]
+            [ monetize 120 ]
+            ,
+            span [class "panel_small" ]
+            [ phrase "judge_p" model.language ]
+          ]
+          ,
+          p [ class "prof_panel -teacher" ]
+          [
+            span [ class "panel_title" ]
+            [ phrase "teacher_t" model.language ]
+            ,
+            span [class "panel_number" ]
+            [ monetize 111 ]
+            ,
+            span [class "panel_small" ]
+            [ phrase "teacher_p" model.language ]
+          ]
+          ,
+          p [ class "prof_panel -mechanic" ]
+          [
+            span [ class "panel_title" ]
+            [ phrase "mechanic_t" model.language ]
+            ,
+            span [class "panel_number" ]
+            [ monetize 79 ]
+            ,
+            span [class "panel_small" ]
+            [ phrase "mechanic_p" model.language ]
+          ]
+          ,
+          p [ class "prof_panel -salesman" ]
+          [
+            span [ class "panel_title" ]
+            [ phrase "salesman_t" model.language ]
+            ,
+            span [class "panel_number" ]
+            [ monetize 73 ]
+            ,
+            span [class "panel_small" ]
+            [ phrase "salesman_p" model.language ]
+          ]
+          ,
+          p [ class "prof_panel -nurse" ]
+          [
+            span [ class "panel_title" ]
+            [ phrase "nurse_t" model.language ]
+            ,
+            span [class "panel_number" ]
+            [ monetize 63 ]
+            ,
+            span [class "panel_small" ]
+            [ phrase "nurse_p" model.language ]
+          ]
+          ,
+          p [ class "prof_panel -hairdresser" ]
+          [
+            span [ class "panel_title" ]
+            [ phrase "hairdresser_t" model.language ]
+            ,
+            span [class "panel_number" ]
+            [ monetize 22 ]
+            ,
+            span [class "panel_small" ]
+            [ phrase "hairdresser_p" model.language ]
+          ]
+          ,
+          p [ class "prof_panel -student" ]
+          [
+            span [ class "panel_title" ]
+            [ phrase "student_t" model.language ]
+            ,
+            span [class "panel_number" ]
+            [ monetize 5 ]
+            ,
+            span [class "panel_small" ]
+            [ phrase "student_p" model.language ]
+          ]
+          ,
+          p [ class "sources"]
+          [ phrase "sources" model.language ]
         ]
         ,
         prevButton address model
@@ -541,33 +882,28 @@ content address model =
     6 ->
       div [ class "back -second" ]
       [
-        div [ class "main_item" ]
-        [
-          div [ class "content" ]
+        container [
+          title "point" model
+          ,
+          p [ class "lead" ]
+          [ phrase "point_explanation" model.language ]
+          ,
+          button [ onClick address (Subpage 1), class "main_button -medium -comparability" ]
           [
-            p [ class "title" ]
-            [ phrase "point" model.language ]
-            ,
-            p [ class "lead" ]
-            [ phrase "point_explanation" model.language ]
-            ,
-            button [ onClick address (Subpage 1), class "main_button -medium -comparability" ]
-            [
-              p []
-              [ phrase "comparability" model.language ]
-            ]
-            ,
-            button [ onClick address (Subpage 2), class "main_button -medium -exploitation" ]
-            [
-              p []
-              [ phrase "exploitation" model.language ]
-            ]
-            ,
-            button [ onClick address (Subpage 3), class "main_button -medium -money"]
-            [
-              p []
-              [ phrase "money" model.language ]
-            ]
+            p []
+            [ phrase "comparability" model.language ]
+          ]
+          ,
+          button [ onClick address (Subpage 2), class "main_button -medium -exploitation" ]
+          [
+            p []
+            [ phrase "exploitation" model.language ]
+          ]
+          ,
+          button [ onClick address (Subpage 3), class "main_button -medium -money"]
+          [
+            p []
+            [ phrase "money" model.language ]
           ]
         ]
         ,
@@ -582,8 +918,7 @@ content address model =
         [
           div [ class "content" ]
           [
-            p [ class "title" ]
-            [ phrase "comparability" model.language ]
+            title "comparability" model
             ,
             p [ class "readable" ]
             [ phrase "comparability_p1" model.language ]
@@ -606,8 +941,7 @@ content address model =
         [
           div [ class "content" ]
           [
-            p [ class "title" ]
-            [ phrase "exploitation" model.language ]
+            title "exploitation" model
             ,
             p [ class "readable" ]
             [ phrase "exploitation_p1" model.language ]
@@ -630,8 +964,7 @@ content address model =
         [
           div [ class "content" ]
           [
-            p [ class "title" ]
-            [ phrase "money" model.language ]
+            title "money" model
             ,
             p [ class "readable" ]
             [ phrase "money_p1" model.language ]
@@ -641,7 +974,7 @@ content address model =
         button [ onClick address LeaveSubpage, class "overlay menu" ]
         [
           p []
-          [ phrase "leave_subpage" model.language ]
+            [ phrase "leave_subpage" model.language ]
         ]
       ]
     7 ->
@@ -651,8 +984,7 @@ content address model =
         [
           div [ class "content" ]
           [
-            p [ class "title" ]
-            [ phrase "thankyou" model.language ]
+            title "thankyou" model
             ,
             p [ class "readable" ]
             [ phrase "thankyou_p1" model.language ]
@@ -673,6 +1005,7 @@ content address model =
           div []
           [ text (toString model.page) ]
         ]
+
 view : Address Action -> Model -> Html
 view address model =
   content address model
@@ -682,4 +1015,4 @@ view address model =
 
 main : Signal Html
 main =
-  map (view actions.address) model
+  Signal.map (view actions.address) model

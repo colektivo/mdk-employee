@@ -17,8 +17,13 @@ Then run electron on the current directory.
 electron .
 ```
 
--- TODO
--- view functions that:
--- display hours if there's a value
--- display minutes if there's a value
--- move language to another module and return a string, not Html
+
+
+
+### TODO
+* view functions that:
+* modularize code (specially view code)
+* add nice design to configuration
+* translate configuration texts to german?
+* shutdown?
+* handle connected from socketIO?

@@ -23,8 +23,6 @@ type alias Report = { position: Int, timeSpent: TimeSpent, timeSpentInSeconds : 
 type alias VisitorData = { workingTime : WorkingTime, timeReport : List Report, isValid: Bool, isComplete: Bool, salaries : Maybe (List Payment) }
 type alias Payment = { text: String, income: Float, payment : Float }
 
-
-
 decodeVisitorData: String -> Result String VisitorData
 decodeVisitorData =
   Decode.decodeString <| Decode.object5 VisitorData
@@ -33,8 +31,6 @@ decodeVisitorData =
     ( "isValid" := Decode.bool )
     ( "isComplete" := Decode.bool )
     ( Decode.maybe ("salaries" := Decode.list decodePayment) )
-
-
 
 toValidVisitorData : Result String VisitorData -> VisitorData
 toValidVisitorData result =
