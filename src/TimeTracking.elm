@@ -120,6 +120,7 @@ type Action =   Next
             | RestartConfiguration
             | CheckDevices Model
             | Ready (Maybe Config)
+            | StartTracking
             | Start
             | Check (Maybe DeviceData)
             | Configure (Maybe Config)
@@ -218,6 +219,8 @@ updateConfig confirmedDevices =
 update : Action -> Model -> Model
 update action log =
   case action of
+    StartTracking ->
+      { log | page <- 0, seconds <- 0 }
     CheckDevices model ->
       Debug.log "checkDevices:" log
     Check readerData ->
@@ -311,6 +314,8 @@ commandToAction bossMessage =
   let command = (Debug.log "bossMessage.command:" bossMessage.command)
   in
     case command of
+      "start tracking" ->
+        StartTracking
       "configure" ->
         Configure (Debug.log "config" bossMessage.config)
       "ready to start" ->
