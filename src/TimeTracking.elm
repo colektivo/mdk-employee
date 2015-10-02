@@ -54,8 +54,6 @@ port responses = socket `andThen` SocketIO.on "completed" received.address
 
 type alias Model =
   { visitorData: VisitorData
-  , commands: List String
-  , messages: List Message
   , config: Config
   , currentDeviceCheck: DeviceData
   , currentDevicePosition: Int
@@ -73,8 +71,6 @@ type alias Model =
 initialModel : Model
 initialModel =
   { visitorData = defaultCardData
-  , messages = []
-  , commands = []
   , config = defaultConfig
   , currentDeviceCheck = defaultDeviceData
   , currentDevicePosition = 1
@@ -89,6 +85,12 @@ initialModel =
   , readyToStart = False
   , configurationSaved = False
   }
+
+needs = 1
+mechanisms = 2
+competition = 3
+colonialism = 4
+beyond = 5
 
 -- ACTIONS
 
@@ -387,26 +389,43 @@ model =
 --
 -- monetize (paymentEntry "Nurse" model.salaries)
 
+timeSpentIn: Int -> Model -> Html
+timeSpentIn number model =
+  let
+    default = { position = number
+                                  , timeSpent = { hours = Just 0
+                                                , minutes = Just 35
+                                                , seconds = Just 0 }
+                                  , timeSpentInSeconds = 0.00 }
+    positions = List.filter (\report -> report.position == number) model.visitorData.timeReport
+    safePosition = Maybe.withDefault default (List.head positions)
+    minutes = toString ( ceiling (safePosition.timeSpentInSeconds) // 60)
+    display = if safePosition.timeSpentInSeconds == 0
+                then "??"
+                else minutes
+  in
+    text display
+
 paymentEntry : String -> List Payment -> Maybe Payment
 paymentEntry text salaries =
   List.head (List.filter (\element -> element.text == text) salaries)
 
 paymentAmount : Payment -> Html
 paymentAmount comparison =
-  monetize (comparison.payment)
+  monetize (ceiling comparison.payment)
 
-monetize: Float -> Html
+monetize: Int -> Html
 monetize number =
   text ((toString number) ++ "€")
 
-paymentFor: String -> Model -> Float
+paymentFor: String -> Model -> Int
 paymentFor key model =
   let
     salaries = Maybe.withDefault [] model.visitorData.salaries
     salary = List.filter (\salary -> salary.text == key ) salaries
     entry = Maybe.withDefault { text = key , income = 16000 , payment = 350.0 } (List.head salary)
   in
-    entry.payment
+    ceiling entry.payment
 
 showVisitorTime: VisitorData -> Html
 showVisitorTime data =
@@ -680,7 +699,7 @@ content address model =
               [ phrase "needs" model.language ]
               ,
               span [class "big_number" ]
-              [ text "10" ]
+              [ (timeSpentIn needs model) ]
               ,
               span [class "panel_time" ]
               [ phrase "duration_minutes" model.language ]
@@ -692,7 +711,7 @@ content address model =
               [ phrase "mechanisms" model.language ]
               ,
               span [class "big_number" ]
-              [ text "23" ]
+              [ (timeSpentIn mechanisms model) ]
               ,
               span [class "panel_time" ]
               [ phrase "duration_minutes" model.language ]
@@ -704,7 +723,7 @@ content address model =
               [ phrase "competition" model.language ]
               ,
               span [class "big_number" ]
-              [ text "35" ]
+              [ (timeSpentIn competition model) ]
               ,
               span [class "panel_time" ]
               [ phrase "duration_minutes" model.language ]
@@ -716,7 +735,7 @@ content address model =
               [ phrase "colonialism" model.language ]
               ,
               span [class "big_number"]
-              [ text "5"]
+              [ (timeSpentIn colonialism model) ]
               ,
               span [class "panel_time"]
               [ phrase "duration_minutes" model.language]
@@ -728,7 +747,7 @@ content address model =
               [ phrase "beyond" model.language ]
               ,
               span [class "big_number"]
-              [ text "110"]
+              [ (timeSpentIn beyond model) ]
               ,
               span [class "panel_time"]
               [ phrase "duration_minutes" model.language]
