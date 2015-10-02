@@ -434,6 +434,10 @@ p.readable {
   letter-spacing: 5px;
 }
 
+.overlay p {
+  font-family: 'Graphik-Semibold';
+}
+
 .next {
   bottom: 120px;
   right: 120px;
