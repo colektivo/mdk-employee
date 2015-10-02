@@ -574,9 +574,18 @@ deviceEntry (position, confirmed) =
     li [ class (String.join " " classes) ]
        [ text (toString position) ]
 
+configContainer : List Html -> Html
+configContainer html =
+  div [ class "config" ]
+    [
+      div [ class "content" ]
+        html
+    ]
+
+
 container : List Html -> Html
 container html =
-  div [ class "config" ]
+  div [ class "main_item" ]
     [
       div [ class "content" ]
         html
@@ -596,7 +605,7 @@ content address model =
     (-5) ->
       div [ class "back -second" ]
       [
-        container [
+        configContainer [
           div []
           [
             text (toString model.visitorData)
@@ -621,14 +630,14 @@ content address model =
     (-4) ->
       div [ class "back -second" ]
       [
-        container [
+        configContainer [
           title "start the server" model
         ]
       ]
     (-3) ->
       div [ class "back -second" ]
       [
-        container [
+        configContainer [
           title "configure devices and positions" model
           ,
           div[ class "explanation"]
@@ -644,7 +653,7 @@ content address model =
     (-2) ->
       div [ class "back -second" ]
         [
-          container [
+          configContainer [
             title "validate devices and positions" model
             ,
             div[ class "explanation"]

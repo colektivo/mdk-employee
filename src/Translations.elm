@@ -133,9 +133,9 @@ translation key language =
         "validate decices explanation" -> "To validate the desired order please repeat the process..."
         "restart configuration"          -> "restart configuration"
         "start"                  -> "start tracking"
-        "start tracking"          -> "You did it well. Do you wanna start?"
+        "start tracking"          -> "You did it well. Do you want to start?"
         "save configuration"          -> "save configuration"
-        "review config"          -> "Do you wanna review the configuration?"
+        "review config"          -> "Do you want to review the configuration?"
         "configure"              -> "back to configuration"
         _                       -> ("Unknown. Key name: " ++ key)
     _ -> "unkown language"
