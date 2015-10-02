@@ -403,7 +403,7 @@ timeSpentIn number model =
     safePosition = Maybe.withDefault default (List.head positions)
     minutes = toString ( ceiling (safePosition.timeSpentInSeconds) // 60)
     display = if safePosition.timeSpentInSeconds == 0
-                then "??"
+                then "?"
                 else minutes
   in
     text display
