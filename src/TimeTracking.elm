@@ -636,9 +636,9 @@ content address model =
           ,
           div[ class "info" ]
             [ listConfirmedDevices model.confirmedDevices ]
-          ,
-          restartButton address model
         ]
+        ,
+        restartButton address model
       ]
 
     (-2) ->
