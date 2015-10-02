@@ -527,7 +527,7 @@ languageSelector address model language =
 
 startOrConfigure: Address Action -> Model -> Html
 startOrConfigure address model =
-      div [ class "back -second" ]
+      div [ class "back -second start" ]
       [
         twoButtonSelector address model "review config" "configure" (Configure Nothing) "en"
         ,
