@@ -576,7 +576,7 @@ deviceEntry (position, confirmed) =
 
 container : List Html -> Html
 container html =
-  div [ class "main_item" ]
+  div [ class "config" ]
     [
       div [ class "content" ]
         html
