@@ -111,6 +111,10 @@ a {
   text-align: center;
 }
 
+.start .title {
+  font-size: 30px;
+}
+
 /*BOXES*/
 
 .main_item {
