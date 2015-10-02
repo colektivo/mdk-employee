@@ -25,6 +25,10 @@ html {
   font-size: 20px;
 }
 
+a {
+  border: 0px;
+}
+
 /*BACK*/
 
 .back {
@@ -55,6 +59,36 @@ html {
 .back.-second {
   background-position: center 30px;
   background-size: 60px;
+}
+
+/*CONFIG*/
+.numberCircle {
+    border-radius: 50%;
+
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+    margin: 20px;
+
+    background: #fff;
+    border: 2px solid #666;
+    color: #666;
+    text-align: center;
+
+    font: 32px Arial, sans-serif;
+}
+
+.deviceConfirmed {
+  background: #fc0;
+}
+
+.deviceValidated {
+  background: #33CC33;
+}
+
+
+.info {
+  text-align: center;
 }
 
 /*BOXES*/

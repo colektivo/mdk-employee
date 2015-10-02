@@ -267,9 +267,11 @@ update action log =
       log
     Configure config ->
       { log | config <- (toValidConfig config)
+            , confirmedDevices <- []
             , validatedDevices <- setDevicesToValidate (toValidConfig config)
             , page <- -3
-            , seconds <- 0 }
+            , seconds <- 0
+            , readyToStart <- False }
     UpdateClock _ ->
       handleTimeout log
     Previous ->
@@ -531,24 +533,46 @@ showClock address model =
   div []
     [text (toString (model.seconds) )]
 
-listDevices : List Device -> Html
-listDevices devices =
+deviceNumbers currentDevices = [1..(List.length currentDevices)]
+
+listConfirmedDevices : List (Device, Bool) -> Html
+listConfirmedDevices currentDevices =
   let
-    devicesWithIndex = List.indexedMap (,) devices
-    nonZeroPositions (index, device) =
-      if device.position == 0 then (index + 1, device.device)
-        else (device.position, device.device)
-    sortedDevicePositions =
-      List.sort (List.map nonZeroPositions devicesWithIndex)
+    onlyDevices = List.map fst currentDevices
+    statuses = List.repeat (List.length currentDevices) ""
+    positionForDevice device number = if device.position == 0 then number else device.position
+    statusForDevice device = if device.position == 0 then "" else "deviceConfirmed"
+    combine number device status = ((positionForDevice device number), statusForDevice device)
+    listPositions = List.map3 combine (deviceNumbers currentDevices) onlyDevices statuses
   in
     ul []
-      (List.map deviceEntry sortedDevicePositions)
+      (List.map deviceEntry (Debug.log "listPositions" listPositions) )
 
-deviceEntry: (Int,String) -> Html
-deviceEntry position =
-  li []
-    [ text (toString position) ]
+listValidatedDevices : List (Device, Bool) -> Html
+listValidatedDevices currentDevices =
+  let
 
+    onlyDevices = List.map fst currentDevices
+    onlyValidated = List.map snd currentDevices
+
+    statuses = List.repeat (List.length currentDevices) ""
+    statusForDevice device isValidated = if isValidated then "deviceValidated" else "deviceConfirmed"
+
+    combine device isValidated status = (device.position, (statusForDevice device isValidated))
+
+    listPositions = List.map3 combine onlyDevices onlyValidated statuses
+
+  in
+    ul []
+      (List.map deviceEntry (Debug.log "listPositions" listPositions) )
+
+deviceEntry: (Int, String) -> Html
+deviceEntry (position, confirmed) =
+  let
+    classes = ["numberCircle"] ++ [ confirmed ]
+  in
+    li [ class (String.join " " classes) ]
+       [ text (toString position) ]
 
 container : List Html -> Html
 container html =
@@ -577,6 +601,21 @@ content address model =
           [
             text (toString model.visitorData)
           ]
+          ,
+          div []
+          [
+            text (toString model.config)
+          ]
+          ,
+          div []
+          [
+            text (toString model.confirmedDevices)
+          ]
+          ,
+          div []
+          [
+            text (toString model.validatedDevices)
+          ]
         ]
       ]
     (-4) ->
@@ -592,35 +631,11 @@ content address model =
         container [
           title "configure devices and positions" model
           ,
-          div[]
-            [ text (toString model.validatedDevices)]
+          div[ class "explanation"]
+            [ phrase "configure decices explanation" "en"]
           ,
-          div[]
-            [ text (toString model.confirmedDevices)]
-          ,
-
---          div[]
---            [ text (toString (isAllConfigured model))]
---          ,
-
-
---          div[]
---            [ phrase "configuration" "en" ]
---          ,
---          div[]
---            [text (toString model.config) ]
---          ,
---          div[]
---            [text (toString model.currentDeviceCheck) ]
---          ,
---          div[]
---            [text (toString model.validatedDevices) ]
---          ,
---          div[]
---            [text (toString model.currentDevicePosition) ]
---          ,
-          div[]
-            [ listDevices model.config.devices ]
+          div[ class "info" ]
+            [ listConfirmedDevices model.confirmedDevices ]
           ,
           restartButton address model
         ]
@@ -632,14 +647,11 @@ content address model =
           container [
             title "validate devices and positions" model
             ,
-            div[]
-              [ text (toString (deviceToConfirm model.confirmedDevices))]
+            div[ class "explanation"]
+              [ phrase "validate decices explanation" "en"]
             ,
             div[]
-              [ text (toString model.confirmedDevices)]
-            ,
-            div[]
-              [ listDevices model.config.devices ]
+              [ listValidatedDevices model.confirmedDevices ]
             ]
             ,
             saveConfigButton address model

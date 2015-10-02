@@ -128,7 +128,9 @@ translation key language =
         -- configuration keys
         "start the server"      -> "Please start the server (sudo node boss.js)"
         "configure devices and positions" -> "Now we will configure devices and positions..."
+        "configure decices explanation" -> "Please take one card and go to the checkpoint position by the desired order..."
         "validate devices and positions" -> "Now we will validate repeating what we did before"
+        "validate decices explanation" -> "To validate the desired order please repeat the process..."
         "restart configuration"          -> "restart configuration"
         "start"                  -> "start tracking"
         "start tracking"          -> "You did it well. Do you wanna start?"
