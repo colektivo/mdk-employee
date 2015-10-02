@@ -119,6 +119,8 @@ saveConfiguration model =
   }
 
 type Action =   Next
+            | SkipForward
+            | SkipBack
             | RestartConfiguration
             | CheckDevices Model
             | Ready (Maybe Config)
@@ -276,8 +278,12 @@ update action log =
       handleTimeout log
     Previous ->
       { log | page <- log.page - 1, seconds <- 0 }
+    SkipBack ->
+      { log | page <- log.page - 2, seconds <- 0 }
     Next ->
       { log | page <- log.page + 1, seconds <- 0 }
+    SkipForward ->
+      { log | page <- log.page + 2, seconds <- 0 }
     Card data ->
       { log | visitorData <- toValidVisitorData ( decodeVisitorData data ) , page <- 1 }
     Start ->
@@ -441,12 +447,30 @@ next: Address Action -> Model -> Html
 next address model =
   li [ onClick address Next ] [ text "Next" ]
 
+skipForwardButton: Address Action -> Model -> Html
+skipForwardButton address model =
+      button [ onClick address SkipForward, class "overlay next"]
+        [
+          p []
+          [ phrase "next" model.language ]
+        ]
+
+
 nextButton: Address Action -> Model -> Html
 nextButton address model =
       button [ onClick address Next, class "overlay next"]
         [
           p []
           [ phrase "next" model.language ]
+        ]
+
+
+skipBackButton: Address Action -> Model -> Html
+skipBackButton address model =
+        button [ onClick address SkipBack, class "overlay previous"]
+        [
+          p []
+          [ phrase "previous" model.language ]
         ]
 
 prevButton: Address Action -> Model -> Html
@@ -777,7 +801,7 @@ content address model =
         ,
         prevButton address model
         ,
-        nextButton address model
+        skipForwardButton address model
       ]
     4 ->
       div [ class "back -second" ]
@@ -945,7 +969,7 @@ content address model =
           [ phrase "sources" model.language ]
         ]
         ,
-        prevButton address model
+        skipBackButton address model
         ,
         nextButton address model
       ]
