@@ -399,6 +399,19 @@ monetize: Float -> Html
 monetize number =
   text ((toString number) ++ "€")
 
+paymentFor: String -> Model -> Float
+paymentFor key model =
+  let
+    salaries = Maybe.withDefault [] model.visitorData.salaries
+    salary = List.filter (\salary -> salary.text == key ) salaries
+    entry = Maybe.withDefault { text = key , income = 16000 , payment = 350.0 } (List.head salary)
+  in
+    entry.payment
+
+showVisitorTime: VisitorData -> Html
+showVisitorTime data =
+  text (toString (data.workingTime.hours * 60 + data.workingTime.minutes))
+
 previous: Address Action -> Model -> Html
 previous address model =
   li [ onClick address Previous ] [ text "Prev" ]
@@ -534,7 +547,19 @@ title key model =
 
 content: Address Action -> Model -> Html
 content address model =
+
   case model.page of
+    -- log
+    (-5) ->
+      div [ class "back -second" ]
+      [
+        container [
+          div []
+          [
+            text (toString model.visitorData)
+          ]
+        ]
+      ]
     (-4) ->
       div [ class "back -second" ]
       [
@@ -738,7 +763,7 @@ content address model =
             [ phrase "lost_explanation_p1" model.language ]
             ,
             span [ class "emph_number" ]
-            [ text "115" ]
+            [ showVisitorTime model.visitorData ]
             ,
             span []
             [ phrase "lost_explanation_p2" model.language ]
@@ -750,7 +775,7 @@ content address model =
             [ phrase "football_t" model.language ]
             ,
             span [class "big_number" ]
-            [ monetize 9143 ]
+            [ monetize (paymentFor "football_t" model) ]
             ,
             span [class "panel_medium" ]
             [ phrase "football_p" model.language  ]
@@ -762,7 +787,7 @@ content address model =
             [ phrase "doctor_t" model.language ]
             ,
             span [class "panel_number" ]
-            [ monetize 176 ]
+            [ monetize (paymentFor "doctor_t" model) ]
             ,
             span [class "panel_small" ]
             [ phrase "doctor_p" model.language ]
@@ -774,7 +799,7 @@ content address model =
             [ phrase "manager_t" model.language ]
             ,
             span [class "panel_number" ]
-            [ monetize 155 ]
+            [ monetize (paymentFor "manager_t" model) ]
             ,
             span [class "panel_small" ]
             [ phrase "manager_p" model.language ]
@@ -786,7 +811,7 @@ content address model =
             [ phrase "pilot_t" model.language ]
             ,
             span [class "panel_number" ]
-            [ monetize 123 ]
+            [ monetize (paymentFor "pilot_t" model) ]
             ,
             span [class "panel_small" ]
             [ phrase "pilot_p" model.language ]
@@ -798,7 +823,7 @@ content address model =
             [ phrase "judge_t" model.language ]
             ,
             span [class "panel_number" ]
-            [ monetize 120 ]
+            [ monetize (paymentFor "judge_t" model) ]
             ,
             span [class "panel_small" ]
             [ phrase "judge_p" model.language ]
@@ -810,7 +835,7 @@ content address model =
             [ phrase "teacher_t" model.language ]
             ,
             span [class "panel_number" ]
-            [ monetize 111 ]
+            [ monetize (paymentFor "teacher_t" model) ]
             ,
             span [class "panel_small" ]
             [ phrase "teacher_p" model.language ]
@@ -822,7 +847,7 @@ content address model =
             [ phrase "mechanic_t" model.language ]
             ,
             span [class "panel_number" ]
-            [ monetize 79 ]
+            [ monetize (paymentFor "mechanic_t" model) ]
             ,
             span [class "panel_small" ]
             [ phrase "mechanic_p" model.language ]
@@ -834,7 +859,7 @@ content address model =
             [ phrase "salesman_t" model.language ]
             ,
             span [class "panel_number" ]
-            [ monetize 73 ]
+            [ monetize (paymentFor "salesman_t" model) ]
             ,
             span [class "panel_small" ]
             [ phrase "salesman_p" model.language ]
@@ -846,7 +871,7 @@ content address model =
             [ phrase "nurse_t" model.language ]
             ,
             span [class "panel_number" ]
-            [ monetize 63 ]
+            [ monetize (paymentFor "nurse_t" model) ]
             ,
             span [class "panel_small" ]
             [ phrase "nurse_p" model.language ]
@@ -858,7 +883,7 @@ content address model =
             [ phrase "hairdresser_t" model.language ]
             ,
             span [class "panel_number" ]
-            [ monetize 22 ]
+            [ monetize (paymentFor "hairdresser_t" model) ]
             ,
             span [class "panel_small" ]
             [ phrase "hairdresser_p" model.language ]
@@ -870,7 +895,7 @@ content address model =
             [ phrase "student_t" model.language ]
             ,
             span [class "panel_number" ]
-            [ monetize 5 ]
+            [ monetize (paymentFor "student_t" model) ]
             ,
             span [class "panel_small" ]
             [ phrase "student_p" model.language ]
@@ -996,8 +1021,6 @@ content address model =
             ,
             p [ class "readable" ]
             [ phrase "thankyou_p2" model.language ]
-            ,
-            showClock address model
           ]
         ]
       ]

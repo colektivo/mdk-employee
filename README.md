@@ -17,8 +17,9 @@ Then run electron on the current directory.
 electron .
 ```
 
+### NOTES
 
-
+If the number of the rooms change on the space the VisitorData should be changed to have a TimeReport size accordingly
 
 ### TODO
 * view functions that:
