@@ -32,7 +32,7 @@ a {
 /*BACK*/
 
 .back {
-  background-color: #EDEDED;
+  background-color: #CCC;
   background-image: url('images/Logo_Mdk_BW.png');
   background-position: center center;
   background-repeat: no-repeat;
@@ -79,7 +79,7 @@ a {
 
 .config .content p, .explanation {
   font-size: 24px;
-  font-family: 'Graphik-Semibold';
+  font-family: 'Graphik Semibold', 'Graphik-Semibold';
 }
 
 .numberCircle {
@@ -130,7 +130,7 @@ a {
 }
 
 .main_item p {
-  font-family: 'Graphik-Semibold';
+  font-family: 'Graphik Semibold', 'Graphik-Semibold';
   font-size: 36px;
   line-height: 1.45;
   color: #BBA542;
@@ -435,7 +435,7 @@ p.readable {
 }
 
 .overlay p {
-  font-family: 'Graphik-Semibold';
+  font-family: 'Graphik Semibold', 'Graphik-Semibold';
 }
 
 .next {
