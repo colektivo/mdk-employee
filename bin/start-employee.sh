@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-cd ..
+cd $MDK_HOME/mdk-employee
 electron .
