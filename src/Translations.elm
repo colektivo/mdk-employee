@@ -126,6 +126,7 @@ translation key language =
         "student_p"             -> "if you are a student receiving 670 EUR BAföG"
         "sources"               -> "Sources: http://www.gehaltsreporter.de https://www.nettolohn.de http://www.lohnspiegel.de"
         -- configuration keys
+        "Control Room"          -> "Control Room"
         "start the server"      -> "Please start the server (sudo npm start)"
         "configure devices and positions" -> "Now we will configure devices and positions..."
         "configure decices explanation" -> "Please take one card and go to the checkpoint position by the desired order..."

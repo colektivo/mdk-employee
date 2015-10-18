@@ -11,6 +11,7 @@ import Signal           exposing (..)
 import Json.Encode      as Encode
 import Json.Decode as Decode exposing ((:=))
 import Json.Encode as Encode
+import Debug
 
 --
 --
@@ -29,7 +30,7 @@ type alias Config =
   , message: Maybe String
   }
 
-type alias Device = { position: Int, device: String }
+type alias Device = { device: String, position: Int }
 
 defaultConfig : Config
 defaultConfig =
@@ -44,6 +45,15 @@ defaultMessage =
       command = "NoOp"
     , config = Just defaultConfig
   }
+
+employeeStartedMessage : BossMessage
+employeeStartedMessage =
+  {
+      command = "employee started"
+    , config = Just defaultConfig
+  }
+
+
 
 defaultDeviceData : DeviceData
 defaultDeviceData =
@@ -71,7 +81,7 @@ bossSays =
 decodeMessage : String -> Result String BossMessage
 decodeMessage =
   Decode.decodeString <| Decode.object2 BossMessage
-    ("command" := Decode.string )
+    ("command" := (Debug.log "command" Decode.string) )
     ( Decode.maybe ("config" := decodeConfig ) )
 
 decodeConfig: Decode.Decoder Config
@@ -84,8 +94,8 @@ decodeConfig =
 decodeDevice: Decode.Decoder Device
 decodeDevice =
     Decode.object2 Device
-      ("position" := Decode.int )
       ("device" := Decode.string )
+      ("position" := Decode.int )
 
 toValidBossMessage : Result String BossMessage -> BossMessage
 toValidBossMessage result =

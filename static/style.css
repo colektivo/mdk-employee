@@ -62,6 +62,18 @@ a {
 }
 
 /*CONFIG*/
+
+.configback {
+  background-color: #000;
+  background-image: url('images/Logo_Mdk_BW.png');
+  background-repeat: no-repeat;
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-position: center 30px;
+  background-size: 60px;
+}
+
 .config {
   margin: 120px 240px;
   padding: 48px;
@@ -71,10 +83,10 @@ a {
   justify-content: center;
   flex-wrap: wrap;
   align-items: center;
-  background-image: url('images/Marx.png');
+  /*background-image: url('images/Marx.png');
   background-position: center center;
   background-repeat: no-repeat;
-  background-size: 500px;
+  background-size: 500px;*/
 }
 
 .config .content p, .explanation {
@@ -109,6 +121,64 @@ a {
 
 .info {
   text-align: center;
+}
+
+.connections {
+
+}
+
+.boss {
+  background-image: url('images/Old-Boss-icon.png');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 100px;
+  margin: 20px;
+  height: 100px;
+  width: 100px;
+  font: 32px Arial, sans-serif;
+  display: inline-block;
+}
+
+.police {
+  background-image: url('images/Policeman.png');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 100px;
+  margin: 20px;
+  height: 100px;
+  width: 100px;
+  font: 32px Arial, sans-serif;
+  display: inline-block;
+}
+
+.connected {
+  height: 100px;
+  width: 100px;
+  margin: 20px;
+  background-image: url('images/connected.png');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 100px;
+  display: inline-block;
+
+}
+
+.disconnected {
+  height: 100px;
+  width: 100px;
+  margin: 20px;
+  background-image: url('images/disconnected.png');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 100px;
+  display: inline-block;
+
+}
+
+.code {
+  width: 90%;
+  font-family: monospace;
+  color: #eee;
 }
 
 /*BOXES*/

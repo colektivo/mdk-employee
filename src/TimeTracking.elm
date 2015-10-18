@@ -28,7 +28,7 @@ socket = SocketIO.io "http://localhost:8001" SocketIO.defaultOptions
 --
 
 port followBoss : Task x ()
-port followBoss = socket `andThen` SocketIO.on "boss says" (Debug.log "bossSays.address:" bossSays.address)
+port followBoss = socket `andThen` SocketIO.on "boss says" bossSays.address
 
 port talkToBoss : Signal (Task x ())
 port talkToBoss = employeeMessages
@@ -44,16 +44,32 @@ employeeMessages =
 
 outgoingMessages: Signal.Mailbox BossMessage
 outgoingMessages =
-  Signal.mailbox startMessage
+  Signal.mailbox employeeStartedMessage
 
 -- messages port where we will receive the visitorData
 port responses : Task x ()
 port responses = socket `andThen` SocketIO.on "completed" received.address
 
+-- connection handling
+connected : Signal.Mailbox Bool
+connected = Signal.mailbox False
+
+port connection : Task x ()
+port connection = socket `andThen` SocketIO.connected connected.address
+
+-- police status handling
+police : Signal.Mailbox String
+police = Signal.mailbox ""
+
+port policeReady : Task x ()
+port policeReady = socket `andThen` SocketIO.on "units ready" police.address
+
 -- MODEL
 
 type alias Model =
   { visitorData: VisitorData
+  , bossConnected: Bool
+  , policeConnected: Bool
   , config: Config
   , currentDeviceCheck: DeviceData
   , currentDevicePosition: Int
@@ -71,6 +87,8 @@ type alias Model =
 initialModel : Model
 initialModel =
   { visitorData = defaultCardData
+  , bossConnected = False
+  , policeConnected = False
   , config = defaultConfig
   , currentDeviceCheck = defaultDeviceData
   , currentDevicePosition = 1
@@ -120,6 +138,13 @@ saveConfiguration model =
 
 type Action =   Next
             | SkipForward
+            | WaitingForBoss
+            | BossConnected
+            | ConnectionLost
+            | Initialize
+            | WaitingForPolice
+            | PoliceInStrike
+            | PoliceReady
             | SkipBack
             | RestartConfiguration
             | CheckDevices Model
@@ -146,15 +171,6 @@ handleTimeout : Model -> Model
 handleTimeout log =
 
     case log.page of
-      -- configuration page
-      (-4) ->
-        let
-          timeToStart =
-            log.page == -4 && log.seconds > 5
-        in
-          if timeToStart then
-            log
-          else { log | seconds <- log.seconds + 1 }
       7 ->
         if log.seconds > log.timeoutInSeconds then update Reset log else { log | seconds <- log.seconds + 1 }
       _ ->
@@ -223,6 +239,20 @@ updateConfig confirmedDevices =
 update : Action -> Model -> Model
 update action log =
   case action of
+    WaitingForPolice ->
+      { log | policeConnected <- False }
+    PoliceInStrike ->
+      { log | policeConnected <- False, page <- -4 }
+    PoliceReady ->
+      { log | policeConnected <- True, page <- if log.bossConnected then -3 else log.page }
+    WaitingForBoss ->
+      log
+    BossConnected ->
+      { log | bossConnected <- True }
+    ConnectionLost ->
+      { log | bossConnected <- False, policeConnected <- False,  page <- -4 }
+    Initialize ->
+      { log | bossConnected <- True, page <- -3 }
     StartTracking ->
       { log | page <- 0, seconds <- 0 }
     CheckDevices model ->
@@ -324,6 +354,8 @@ commandToAction bossMessage =
   let command = (Debug.log "bossMessage.command:" bossMessage.command)
   in
     case command of
+      "initialize" ->
+        Initialize
       "start tracking" ->
         StartTracking
       "configure" ->
@@ -371,9 +403,47 @@ received : Signal.Mailbox String
 received =
   Signal.mailbox ""
 
+-- connection handling
+
+everConnected : Signal Bool
+everConnected = Signal.foldp (||) False connected.signal
+
+-- police control handling
+
+
+convertPoliceMessage policeMessage =
+  case (Debug.log "police message" policeMessage) of
+    "" -> False
+    _ -> True
+
+policeEverConnected : Signal Bool
+policeEverConnected =
+  let
+    policeBoolMessage =
+      Signal.map convertPoliceMessage police.signal
+  in
+    Signal.foldp (||) False policeBoolMessage
+
+policeBoolMessages =
+  Signal.map convertPoliceMessage police.signal
+
+
 cardinput : Signal Action
 cardinput =
   Signal.map Card received.signal
+
+connectionStatus tuple =
+  case (Debug.log "connection" tuple) of
+    (False, False) -> WaitingForBoss
+    (False, True) -> ConnectionLost
+    (True, _) -> BossConnected
+
+policeStatus tuple =
+  case (Debug.log "police" tuple) of
+    (False, False) -> WaitingForPolice
+    (False, True) -> PoliceInStrike
+    (True, _) -> PoliceReady
+
 
 signalsWithClock : Signal Action
 signalsWithClock =
@@ -383,9 +453,12 @@ signalsWithClock =
     allinputs = Signal.merge actions.signal cardAndKeyboardInputs
     boss = Signal.map commandToAction incomingMessages
     allInputsWithBoss = Signal.merge boss allinputs
+    bossConnected = Signal.map2 (\a b -> connectionStatus (a,b)) connected.signal everConnected
+    policeConnected = Signal.map2 (\a b -> policeStatus (a,b)) policeBoolMessages policeEverConnected
     clock = Signal.map UpdateClock (every second)
+    clockWithConnection = Signal.mergeMany [clock, bossConnected, policeConnected]
   in
-    Signal.merge allInputsWithBoss clock
+    Signal.merge allInputsWithBoss clockWithConnection
 
 model: Signal Model
 model =
@@ -620,22 +693,33 @@ title key model =
   p [ class "title" ]
     [ phrase key model.language ]
 
+connectedClass status =
+  case status of
+    True -> "connected"
+    _ -> "disconnected"
+
+
 
 content: Address Action -> Model -> Html
 content address model =
 
   case model.page of
     -- log
-    (-5) ->
-      div [ class "back -second" ]
+    (-6) ->
+      div [ class "configback" ]
       [
         configContainer [
-          div []
+          div [ class "code" ]
           [
             text (toString model.visitorData)
           ]
-          ,
-          div []
+        ]
+      ]
+    (-5) ->
+      div [ class "configback" ]
+      [
+        configContainer [
+          div [ class "code"]
           [
             text (toString model.config)
           ]
@@ -652,10 +736,31 @@ content address model =
         ]
       ]
     (-4) ->
-      div [ class "back -second" ]
+      div [ class "configback" ]
       [
         configContainer [
-          title "start the server" model
+          title "Control Room" model
+        ,
+        div []
+        [
+          ul [ class "connections" ] [
+            li [ ]
+            [
+              div [ class "boss"] []
+              ,
+              span [ class (connectedClass model.bossConnected) ]
+              [ ]
+            ]
+            ,
+            li [ ]
+            [
+              div [ class "police" ] []
+              ,
+              span [ class (connectedClass model.policeConnected) ]
+              [ ]
+            ]
+          ]
+        ]
         ]
       ]
     (-3) ->
