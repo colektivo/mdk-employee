@@ -181,6 +181,10 @@ a {
   color: #eee;
 }
 
+.start .title {
+  font-size: 30px;
+}
+
 /*BOXES*/
 
 .main_item {
