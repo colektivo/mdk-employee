@@ -83,13 +83,14 @@ a {
   justify-content: center;
   flex-wrap: wrap;
   align-items: center;
+  font-family: 'Graphik Semibold', 'Graphik-Semibold';
   /*background-image: url('images/Marx.png');
   background-position: center center;
   background-repeat: no-repeat;
   background-size: 500px;*/
 }
 
-.config .content p, .explanation {
+.content p, .explanation {
   font-size: 24px;
   font-family: 'Graphik Semibold', 'Graphik-Semibold';
 }
@@ -123,8 +124,24 @@ a {
   text-align: center;
 }
 
+.devices {
+  display: inline-block;
+}
+
 .connections {
 
+}
+
+.card-photo {
+  background-image: url('images/card-photo.gif');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 400px;
+  margin: 60px;
+  height: 300px;
+  width: 400px;
+  font: 32px Arial, sans-serif;
+  display: inline-block;
 }
 
 .boss {
@@ -180,6 +197,12 @@ a {
   font-family: monospace;
   color: #eee;
 }
+
+.config-title {
+  font-size: 30px;
+  color: #eee;
+}
+
 
 .start .title {
   font-size: 30px;

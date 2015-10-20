@@ -180,6 +180,9 @@ handleTimeout log =
 setDevicesToValidate config =
   List.map (\dev -> { dev | device <- ""}) config.devices
 
+resetDevicesToConfirm config =
+  List.map (\dev -> (dev, False)) config.devices
+
 setDevicesToConfirm validatedDevices =
   List.map (\dev -> (dev, False)) validatedDevices
 
@@ -299,7 +302,7 @@ update action log =
       log
     Configure config ->
       { log | config <- (toValidConfig config)
-            , confirmedDevices <- []
+            , confirmedDevices <- resetDevicesToConfirm (toValidConfig config)
             , validatedDevices <- setDevicesToValidate (toValidConfig config)
             , page <- -3
             , seconds <- 0
@@ -642,7 +645,7 @@ listConfirmedDevices currentDevices =
     combine number device status = ((positionForDevice device number), statusForDevice device)
     listPositions = List.map3 combine (deviceNumbers currentDevices) onlyDevices statuses
   in
-    ul []
+    ul [ class "devices" ]
       (List.map deviceEntry (Debug.log "listPositions" listPositions) )
 
 listValidatedDevices : List (Device, Bool) -> Html
@@ -660,7 +663,7 @@ listValidatedDevices currentDevices =
     listPositions = List.map3 combine onlyDevices onlyValidated statuses
 
   in
-    ul []
+    ul [ class "devices" ]
       (List.map deviceEntry (Debug.log "listPositions" listPositions) )
 
 deviceEntry: (Int, String) -> Html
@@ -675,7 +678,7 @@ configContainer : List Html -> Html
 configContainer html =
   div [ class "config" ]
     [
-      div [ class "content" ]
+      div [ class "" ]
         html
     ]
 
@@ -690,8 +693,17 @@ container html =
 
 title : String -> Model -> Html
 title key model =
-  p [ class "title" ]
+  genericTitle key "title" model
+
+configTitle : String -> Model -> Html
+configTitle key model =
+  genericTitle key "config-title" model
+
+genericTitle : String -> String -> Model -> Html
+genericTitle key className model =
+  p [ class className ]
     [ phrase key model.language ]
+
 
 connectedClass status =
   case status of
@@ -721,16 +733,22 @@ content address model =
         configContainer [
           div [ class "code"]
           [
+            text "current config:"
+            ,
             text (toString model.config)
           ]
           ,
-          div []
+          div [ class "code"]
           [
+            text "confirmed devices:"
+            ,
             text (toString model.confirmedDevices)
           ]
           ,
-          div []
+          div [ class "code"]
           [
+            text "validated devices:"
+            ,
             text (toString model.validatedDevices)
           ]
         ]
@@ -739,7 +757,7 @@ content address model =
       div [ class "configback" ]
       [
         configContainer [
-          title "Control Room" model
+          configTitle "Control Room" model
         ,
         div []
         [
@@ -764,32 +782,43 @@ content address model =
         ]
       ]
     (-3) ->
-      div [ class "back -second" ]
+      div [ class "configback" ]
       [
         configContainer [
-          title "configure devices and positions" model
+          configTitle "configure devices and positions" model
           ,
           div[ class "explanation"]
             [ phrase "configure decices explanation" "en"]
           ,
           div[ class "info" ]
-            [ listConfirmedDevices model.confirmedDevices ]
+            [
+              listConfirmedDevices model.confirmedDevices
+              ,
+              span [ class "card-photo" ]
+                [ text "" ]
+            ]
         ]
         ,
         restartButton address model
       ]
 
     (-2) ->
-      div [ class "back -second" ]
+      div [ class "configback" ]
         [
           configContainer [
-            title "validate devices and positions" model
+            configTitle "validate devices and positions" model
             ,
             div[ class "explanation"]
               [ phrase "validate decices explanation" "en"]
             ,
-            div[]
-              [ listValidatedDevices model.confirmedDevices ]
+            div[ class "info"]
+              [
+                listValidatedDevices model.confirmedDevices
+                ,
+                span [ class "card-photo" ]
+                  [ text "" ]
+              ]
+
             ]
             ,
             saveConfigButton address model
