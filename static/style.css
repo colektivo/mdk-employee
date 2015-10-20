@@ -132,6 +132,12 @@ a {
 
 }
 
+.error {
+  color: #f00;
+  font-size: 32px;
+  margin:30px;
+}
+
 .card-photo {
   background-image: url('images/card-photo.gif');
   background-position: center center;

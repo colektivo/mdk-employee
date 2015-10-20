@@ -73,6 +73,7 @@ type alias Model =
   , config: Config
   , currentDeviceCheck: DeviceData
   , currentDevicePosition: Int
+  , errorMessage: String
   , validatedDevices: List Device
   , confirmedDevices: List (Device, Bool)
   , page: Int
@@ -89,6 +90,7 @@ initialModel =
   { visitorData = defaultCardData
   , bossConnected = False
   , policeConnected = False
+  , errorMessage = ""
   , config = defaultConfig
   , currentDeviceCheck = defaultDeviceData
   , currentDevicePosition = 1
@@ -270,6 +272,7 @@ update action log =
             currentValidatedDevices = setReceivedDevice log (toVaildDeviceData readerData)
           in
             { log | currentDevicePosition <- log.currentDevicePosition + 1
+                  , errorMessage <- ""
                   , currentDeviceCheck <- (Debug.log "reader" (toVaildDeviceData readerData))
                   , validatedDevices <- currentValidatedDevices
                   , confirmedDevices <- setDevicesToConfirm currentValidatedDevices
@@ -287,7 +290,10 @@ update action log =
                               -2
                             else
                               -3
-                  , confirmedDevices <- if isCurrentDeviceConfirmed then currentConfirmedDevices else setDevicesToConfirm log.validatedDevices
+                  , errorMessage <- if isCurrentDeviceConfirmed
+                                    then ""
+                                    else "Device position did not match"
+                  , confirmedDevices <- if isCurrentDeviceConfirmed then currentConfirmedDevices else resetDevicesToConfirm (toValidConfig (Just log.config))
                   , validatedDevices <- if isCurrentDeviceConfirmed then log.validatedDevices else setDevicesToValidate log.config
                   , config <- if isComplete then updateConfig currentConfirmedDevices else log.config
                   , readyToStart <-isComplete
@@ -300,6 +306,13 @@ update action log =
       log
     NoOp ->
       log
+    RestartConfiguration ->
+      { log | confirmedDevices <- resetDevicesToConfirm log.config
+            , validatedDevices <- setDevicesToValidate log.config
+            , errorMessage <- ""
+            , page <- -3
+            , seconds <- 0
+            , readyToStart <- False }
     Configure config ->
       { log | config <- (toValidConfig config)
             , confirmedDevices <- resetDevicesToConfirm (toValidConfig config)
@@ -605,7 +618,7 @@ startOrConfigure: Address Action -> Model -> Html
 startOrConfigure address model =
       div [ class "back -second start" ]
       [
-        twoButtonSelector address model "review config" "configure" (Configure Nothing) "en"
+        twoButtonSelector address model "review config" "configure" RestartConfiguration  "en"
         ,
         twoButtonSelector address model "start tracking" "start" (Say startTracking) "en"
       ]
@@ -674,10 +687,13 @@ deviceEntry (position, confirmed) =
     li [ class (String.join " " classes) ]
        [ text (toString position) ]
 
-configContainer : List Html -> Html
-configContainer html =
+configContainer : Model -> List Html -> Html
+configContainer model html =
   div [ class "config" ]
     [
+      div [ class "error"]
+        [ text model.errorMessage  ]
+      ,
       div [ class "" ]
         html
     ]
@@ -720,7 +736,7 @@ content address model =
     (-6) ->
       div [ class "configback" ]
       [
-        configContainer [
+        configContainer model [
           div [ class "code" ]
           [
             text (toString model.visitorData)
@@ -730,7 +746,7 @@ content address model =
     (-5) ->
       div [ class "configback" ]
       [
-        configContainer [
+        configContainer model [
           div [ class "code"]
           [
             text "current config:"
@@ -756,7 +772,7 @@ content address model =
     (-4) ->
       div [ class "configback" ]
       [
-        configContainer [
+        configContainer model [
           configTitle "Control Room" model
         ,
         div []
@@ -784,7 +800,7 @@ content address model =
     (-3) ->
       div [ class "configback" ]
       [
-        configContainer [
+        configContainer model [
           configTitle "configure devices and positions" model
           ,
           div[ class "explanation"]
@@ -805,7 +821,7 @@ content address model =
     (-2) ->
       div [ class "configback" ]
         [
-          configContainer [
+          configContainer model [
             configTitle "validate devices and positions" model
             ,
             div[ class "explanation"]
