@@ -97,28 +97,28 @@ defaultCardData =
   { isComplete = True
   , isValid = True
   , stats = Just
-    [ { position = 1 , averageTimeSpent = 1800, records = 100 }
-    , { position = 2 , averageTimeSpent = 3600, records = 100  }
-    , { position = 3 , averageTimeSpent = 1800, records = 100  }
-    , { position = 4 , averageTimeSpent = 3600, records = 100  }
-    , { position = 5 , averageTimeSpent = 1800, records = 100  }
-    , { position = 0 , averageTimeSpent = 12600, records = 100  }
+    [ { position = 1 , averageTimeSpent = 600, records = 100 }
+    , { position = 2 , averageTimeSpent = 800, records = 100  }
+    , { position = 3 , averageTimeSpent = 1000, records = 100  }
+    , { position = 4 , averageTimeSpent = 800, records = 100  }
+    , { position = 5 , averageTimeSpent = 600, records = 100  }
+    , { position = 0 , averageTimeSpent = 3800, records = 100  }
     ]
   , timeReport =
-    [ { position = 1, timeSpent = { hours = Just 1, minutes = Nothing, seconds = Nothing }, timeSpentInSeconds = 3600 }
-    , { position = 2, timeSpent = { hours = Nothing, minutes = Just 30, seconds = Just 10 }, timeSpentInSeconds = 1810 }
-    , { position = 3, timeSpent = { hours = Nothing, minutes = Just 30, seconds = Just 1 }, timeSpentInSeconds = 1801 }
-    , { position = 4, timeSpent = { hours = Just 1, minutes = Nothing, seconds = Just 1 }, timeSpentInSeconds = 3601 }
-    , { position = 5, timeSpent = { hours = Nothing, minutes = Just 30, seconds = Just 1 }, timeSpentInSeconds = 1801 }
+    [ { position = 1, timeSpent = { hours = Nothing , minutes = Just 10, seconds = Nothing }, timeSpentInSeconds = 600 }
+    , { position = 2, timeSpent = { hours = Nothing, minutes = Just 13, seconds = Just 20 }, timeSpentInSeconds = 800 }
+    , { position = 3, timeSpent = { hours = Nothing, minutes = Just 16, seconds = Just 40 }, timeSpentInSeconds = 1000 }
+    , { position = 4, timeSpent = { hours = Just 1, minutes = Just 13, seconds = Just 20 }, timeSpentInSeconds = 800 }
+    , { position = 5, timeSpent = { hours = Nothing, minutes = Just 10, seconds = Nothing  }, timeSpentInSeconds = 600 }
     ]
   , workingTime =
     { years = 0
     , months = 0
     , days = 0
-    , decimalTime = 3.5
-    , hours = 3
-    , seconds = 13
-    , minutes = 30
+    , decimalTime = 1.05
+    , hours = 1
+    , seconds = 20
+    , minutes = 3
     }
   , salaries = Just [
       { text =  "football_t"          , income =  830000  , payment = 18154.5 }
