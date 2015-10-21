@@ -1,6 +1,6 @@
 # TimeTracking for Museum des Kapitalismus in Elm using Electron -
 
-[MDK Time Tracking architecture] (https://github.com/colektivo/mdk-employee/blob/master/docs/infographic/infographic.001.jpg?raw=true "MDK Time Tracking architecture")
+![MDK Time Tracking architecture] (https://github.com/colektivo/mdk-employee/blob/master/docs/infographic/infographic.001.jpg?raw=true "MDK Time Tracking architecture")
 
 Run Elm in [Electron](http://electron.atom.io/)!
 
