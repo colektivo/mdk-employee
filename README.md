@@ -64,3 +64,4 @@ If the number of the rooms change on the space the VisitorData should be changed
 * add nice design to configuration
 * translate configuration texts to german?
 * shutdown?
+* make more settings configurable, now hardcoded in mdk-boss
