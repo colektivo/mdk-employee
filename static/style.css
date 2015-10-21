@@ -46,13 +46,13 @@ a {
   content: '';
   position: absolute;
   display: block;
-  bottom: 120px;
-  left: 47.5%;
+  bottom: 474px;
+  left: 250px;
   width: 0;
   height: 0;
-  border-left: 48px solid transparent;
-  border-right: 48px solid transparent;
-  border-top: 48px solid #BBA542; /*champagne*/
+  border-top: 48px solid transparent;
+  border-bottom: 48px solid transparent;
+  border-left: 48px solid #BBA542; /*champagne*/
   animation: fade_arrow 5s infinite;
 }
 
@@ -597,15 +597,15 @@ p.readable {
 
 @keyframes fade_arrow {
   0% {
-    bottom: 120px;
+    left: 1800px;
     opacity: 0;
   }
   50% {
-    bottom: 60px;
+    left: 1740px;
     opacity: 1;
   }
   100% {
-    bottom: 120px;
+    left: 1800px;
     opacity: 0;
   }
 }
