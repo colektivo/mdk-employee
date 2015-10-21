@@ -60,9 +60,7 @@ electron .
 If the number of the rooms change on the space the VisitorData should be changed to have a TimeReport size accordingly
 
 ### TODO
-* view functions that:
 * modularize code (specially view code)
 * add nice design to configuration
 * translate configuration texts to german?
 * shutdown?
-* handle connected from socketIO?
